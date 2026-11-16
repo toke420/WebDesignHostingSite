@@ -1,0 +1,19 @@
+[Unit]
+Description=WebTechPros Helpdesk
+After=network.target
+
+[Service]
+Type=simple
+# Replace paths and user with your site's dedicated deployment account.
+User=webtechpros
+WorkingDirectory=/home/webtechpros/app
+EnvironmentFile=/home/webtechpros/helpdesk.env
+ExecStart=/home/webtechpros/app/.local/bin/helpdesk
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

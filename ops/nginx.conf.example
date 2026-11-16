@@ -1,0 +1,26 @@
+# Merge into the HTTPS server block managed by Virtualmin for webtechpros.net.
+# Point the domain's document root at the built dist/ directory.
+# Helpdesk must run persistently on 127.0.0.1:8080 (see README).
+location / {
+    try_files $uri $uri/ /index.html;
+}
+location = /widget.js {
+    proxy_pass http://127.0.0.1:8080;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
+location /api/widget/ {
+    proxy_pass http://127.0.0.1:8080;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_http_version 1.1;
+    proxy_set_header Connection "";
+    proxy_buffering off;
+    proxy_cache off;
+    proxy_read_timeout 1h;
+}
+# Staff inbox: configure a separate HTTPS helpdesk subdomain in Virtualmin.
+# Proxy ALL paths on that subdomain to 127.0.0.1:8080 using the same headers,
+# proxy_buffering off, HTTP/1.1 and read timeout above. Do not expose /api/auth,
+# /api/settings or other staff endpoints on the main site by accident.
