@@ -1,0 +1,88 @@
+schema_version: 2
+project:
+  name: WebTechPros
+  type: existing-code
+  version_stage: GA
+  mode: null
+  safety_snapshot: ''
+framework:
+  installed_version: unknown
+  setup_complete: true
+  migrated_at: null
+  migrated_from: null
+  migration_status: null
+  hook_last_ran: null
+  consistency:
+    last_checked: null
+    status: ok
+    drift: []
+    check_error: null
+  update:
+    available: null
+    last_checked: null
+    declined: null
+    check_error: null
+session:
+  deference_level: collaborative
+  default_action: null
+work:
+  last_item_id: null
+  active:
+    id: null
+    type: null
+    workflow: []
+    phase: null
+    title: null
+    started: null
+    entry_category: null
+features:
+  product_milestones:
+    status: declined
+    offered_at: null
+    decided_at: '2026-11-19T15:51:58+00:00'
+    defer_until: null
+  product_backlog:
+    status: declined
+    offered_at: null
+    decided_at: '2026-11-19T15:51:58+00:00'
+    defer_until: null
+  product_personas:
+    status: declined
+    offered_at: null
+    decided_at: '2026-11-19T15:51:58+00:00'
+    defer_until: null
+  product_stories:
+    status: declined
+    offered_at: null
+    decided_at: '2026-11-19T15:51:58+00:00'
+    defer_until: null
+  document_corpus:
+    status: declined
+    offered_at: null
+    decided_at: '2026-11-19T15:51:58+00:00'
+    defer_until: null
+  usage_tracking:
+    status: declined
+    offered_at: null
+    decided_at: '2026-11-19T15:51:58+00:00'
+    defer_until: null
+  behavioral_regression:
+    status: declined
+    offered_at: null
+    decided_at: '2026-11-19T15:51:58+00:00'
+    defer_until: null
+  work_item_artifacts:
+    status: declined
+    offered_at: null
+    decided_at: '2026-11-19T15:51:58+00:00'
+    defer_until: null
+health:
+  last_checked: null
+  artifacts:
+    milestones: not_configured
+    backlog: not_configured
+    personas: not_configured
+    stories: not_configured
+    corpus: not_configured
+work_history: []
+learnings: []

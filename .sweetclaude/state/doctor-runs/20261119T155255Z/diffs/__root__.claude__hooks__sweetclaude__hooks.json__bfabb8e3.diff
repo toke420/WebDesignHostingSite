@@ -1,0 +1,185 @@
+--- a//root/.claude/hooks/sweetclaude/hooks.json
++++ b//root/.claude/hooks/sweetclaude/hooks.json
+@@ -0,0 +1,182 @@
++{
++  "hooks": {
++    "SessionStart": [
++      {
++        "matcher": "startup",
++        "hooks": [
++          {
++            "type": "command",
++            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/session-preflight.sh"
++          }
++        ]
++      },
++      {
++        "matcher": "startup",
++        "hooks": [
++          {
++            "type": "command",
++            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/drift-gate.sh"
++          }
++        ]
++      }
++    ],
++    "PreToolUse": [
++      {
++        "matcher": "Skill",
++        "hooks": [
++          {
++            "type": "command",
++            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/master-preflight.sh"
++          }
++        ]
++      },
++      {
++        "matcher": "",
++        "hooks": [
++          {
++            "type": "command",
++            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/preflight-guard.sh"
++          }
++        ]
++      },
++      {
++        "matcher": "Write|Edit",
++        "hooks": [
++          {
++            "type": "command",
++            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/test-guardian.sh"
++          }
++        ]
++      },
++      {
++        "matcher": "Write|Edit",
++        "hooks": [
++          {
++            "type": "command",
++            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/tdd-prewrite-guardian.sh"
++          }
++        ]
++      },
++      {
++        "matcher": "Bash",
++        "hooks": [
++          {
++            "type": "command",
++            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/artifact-guardian.sh"
++          }
++        ]
++      },
++      {
++        "matcher": "Bash",
++        "hooks": [
++          {
++            "type": "command",
++            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/wip-limit.sh"
++          }
++        ]
++      },
++      {
++        "matcher": "Write|Edit|NotebookEdit|Bash",
++        "hooks": [
++          {
++            "type": "command",
++            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/large-story-gate.sh"
++          }
++        ]
++      },
++      {
++        "matcher": "Write|Edit|NotebookEdit|Bash",
++        "hooks": [
++          {
++            "type": "command",
++            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/small-story-gate.sh"
++          }
++        ]
++      }
++    ],
++    "PostToolUse": [
++      {
++        "matcher": "Write|Edit",
++        "hooks": [
++          {
++            "type": "command",
++            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/auto-test-runner.sh"
++          }
++        ]
++      },
++      {
++        "matcher": "Write|Edit",
++        "hooks": [
++          {
++            "type": "command",
++            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/state-regenerator.sh"
++          }
++        ]
++      },
++      {
++        "matcher": "Skill",
++        "hooks": [
++          {
++            "type": "command",
++            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/skill-tracker.sh"
++          }
++        ]
++      },
++      {
++        "matcher": "ExitPlanMode",
++        "hooks": [
++          {
++            "type": "command",
++            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/plan-tracker.sh"
++          }
++        ]
++      },
++      {
++        "matcher": "Write|Edit|NotebookEdit|Bash",
++        "hooks": [
++          {
++            "type": "command",
++            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/large-story-evidence.sh"
++          }
++        ]
++      },
++      {
++        "matcher": "Write|Edit|NotebookEdit|Bash",
++        "hooks": [
++          {
++            "type": "command",
++            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/small-story-evidence.sh"
++          }
++        ]
++      }
++    ],
++    "UserPromptSubmit": [
++      {
++        "hooks": [
++          {
++            "type": "command",
++            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/migration-decision-reminder.sh"
++          }
++        ]
++      }
++    ],
++    "Stop": [
++      {
++        "hooks": [
++          {
++            "type": "command",
++            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/large-story-stop-guard.sh"
++          }
++        ]
++      },
++      {
++        "hooks": [
++          {
++            "type": "command",
++            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/small-story-stop-guard.sh"
++          }
++        ]
++      }
++    ]
++  }
++}

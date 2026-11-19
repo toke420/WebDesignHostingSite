@@ -1,0 +1,39 @@
+{
+  "timestamp": "20261119T155304Z",
+  "version": "unknown",
+  "summary": {
+    "auto_fixed": 4,
+    "user_fixed": 0,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 1,
+    "warnings": 3,
+    "info": 0,
+    "total_findings": 4
+  },
+  "findings": [
+    {
+      "id": "hook-health:missing:hooks.json",
+      "severity": "error",
+      "summary": "SweetClaude hooks configuration is missing"
+    },
+    {
+      "id": "hook-health:missing-rule:interaction-model.md",
+      "severity": "warning",
+      "summary": "SweetClaude rules file interaction-model.md is missing"
+    },
+    {
+      "id": "hook-health:missing-rule:phase-gates.md",
+      "severity": "warning",
+      "summary": "SweetClaude rules file phase-gates.md is missing"
+    },
+    {
+      "id": "hook-health:missing-rule:tdd-levels.md",
+      "severity": "warning",
+      "summary": "SweetClaude rules file tdd-levels.md is missing"
+    }
+  ],
+  "findings_total": 4,
+  "findings_truncated": 0,
+  "menu_preference": "proceed"
+}
