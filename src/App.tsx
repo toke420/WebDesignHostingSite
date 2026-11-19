@@ -18,17 +18,15 @@ import {
   LightningIcon,
   ClockIcon,
   PaletteIcon,
-  CodeIcon,
-  CaretRightIcon,
+  MegaphoneIcon,
 } from "@phosphor-icons/react";
 import {
-  brand,
-  services,
-  logoPackage,
-  projects,
-  faqs,
+  serviceOrder,
+  formatPrice,
+  type Project,
   type ServiceId,
 } from "./content";
+import { T, useSite } from "./editable";
 import { submitConsultation, openChat } from "./helpdesk";
 
 const serviceIcons = {
@@ -38,7 +36,13 @@ const serviceIcons = {
   support: HeadsetIcon,
   telephony: PhoneCallIcon,
 };
+const benefitIcons = [LightningIcon, ShieldCheckIcon, ChatCircleDotsIcon];
 type Consultation = { service: string; detail: string };
+
+/** Tells the admin editor which panel matches what was clicked in the preview. */
+function selectAttr(value: object) {
+  return { "data-select": JSON.stringify(value) };
+}
 
 function Wordmark() {
   return (
@@ -55,19 +59,26 @@ function Wordmark() {
 }
 
 export default function App() {
+  const { content, editing } = useSite();
+  const { services, projects, faqs, logoPackage, sections, settings, brand } =
+    content;
   const [mobileMenu, setMobileMenu] = useState(false);
   const [activeService, setActiveService] = useState<ServiceId>("hosting");
   const [consultation, setConsultation] = useState<Consultation | null>(null);
-  const [project, setProject] = useState<(typeof projects)[number] | null>(
-    null,
-  );
+  const [project, setProject] = useState<Project | null>(null);
   const [privacy, setPrivacy] = useState(false);
   const [chatState, setChatState] = useState<"idle" | "loading" | "error">(
     "idle",
   );
   const [chatLoaded, setChatLoaded] = useState(false);
-  const service = services.find((s) => s.id === activeService)!;
+  const serviceIndex = Math.max(
+    0,
+    services.findIndex((s) => s.id === activeService),
+  );
+  const service = services[serviceIndex];
+  const visibleProjects = projects.filter((p) => p.visible);
   const consult = (serviceName = "Not sure yet", detail = "") => {
+    if (editing) return;
     window.HelpDesk?.close();
     setConsultation({ service: serviceName, detail });
     setMobileMenu(false);
@@ -84,6 +95,24 @@ export default function App() {
   };
 
   useEffect(() => {
+    if (editing) return;
+    document.title = content.seo.title;
+    document
+      .querySelector('meta[name="description"]')
+      ?.setAttribute("content", content.seo.description);
+  }, [content.seo, editing]);
+
+  useEffect(() => {
+    if (!editing) return;
+    const listener = (event: MessageEvent) => {
+      if (event.origin !== location.origin) return;
+      if (event.data?.type === "wtp:service") setActiveService(event.data.id);
+    };
+    window.addEventListener("message", listener);
+    return () => window.removeEventListener("message", listener);
+  }, [editing]);
+
+  useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) =>
         entries.forEach((entry) => {
@@ -98,11 +127,27 @@ export default function App() {
     return () => observer.disconnect();
   }, []);
 
+  const announcement = settings.announcement;
+  const ProjectTag = editing ? "div" : "button";
+
   return (
     <>
       <a className="skip-link" href="#main">
         Skip to content
       </a>
+      {(announcement.enabled || (editing && announcement.text)) && (
+        <div
+          className={`announcement ${announcement.enabled ? "" : "is-hidden-live"}`}
+          {...selectAttr({ panel: "settings" })}
+        >
+          <MegaphoneIcon size={16} />
+          {announcement.link && !editing ? (
+            <a href={announcement.link}>{announcement.text}</a>
+          ) : (
+            <T path="settings.announcement.text" />
+          )}
+        </div>
+      )}
       <header className="site-header">
         <div className="container nav-inner">
           <Wordmark />
@@ -154,17 +199,18 @@ export default function App() {
           className="hero container"
           id="home"
           aria-labelledby="hero-title"
+          {...selectAttr({ panel: "text", group: "brand" })}
         >
           <div className="hero-copy">
             <p className="eyebrow">
-              <span className="eyebrow-line" /> YOUR IDEAS. OUR EXPERTISE.
+              <span className="eyebrow-line" /> <T path="brand.eyebrow" />
             </p>
             <h1 id="hero-title">
-              {brand.headline[0]}
+              <T as="span" className="hero-line" path="brand.headline.0" />
               <br />
-              <span>{brand.headline[1]}</span>
+              <T as="span" className="hero-accent" path="brand.headline.1" />
             </h1>
-            <p className="hero-intro">{brand.intro}</p>
+            <T as="p" className="hero-intro" path="brand.intro" multiline />
             <div className="hero-actions">
               <button
                 className="button button-yellow"
@@ -193,13 +239,7 @@ export default function App() {
         <div className="container service-rail" aria-label="Our capabilities">
           {[...services]
             .sort(
-              (a, b) =>
-                ["design", "hosting", "email", "support", "telephony"].indexOf(
-                  a.id,
-                ) -
-                ["design", "hosting", "email", "support", "telephony"].indexOf(
-                  b.id,
-                ),
+              (a, b) => serviceOrder.indexOf(a.id) - serviceOrder.indexOf(b.id),
             )
             .map((s) => {
               const Icon = serviceIcons[s.id];
@@ -222,16 +262,22 @@ export default function App() {
           id="services"
           aria-labelledby="services-heading"
         >
-          <div className="section-title-row">
+          <div
+            className="section-title-row"
+            {...selectAttr({ panel: "text", group: "services" })}
+          >
             <div>
-              <p className="section-kicker">
-                THE RIGHT TOOLS. THE RIGHT PEOPLE.
-              </p>
+              <T
+                as="p"
+                className="section-kicker"
+                path="sections.services.kicker"
+              />
               <h2 id="services-heading">
-                Your business, <span className="muted">connected.</span>
+                <T path="sections.services.heading" />{" "}
+                <T className="muted" path="sections.services.headingMuted" />
               </h2>
             </div>
-            <span className="small-note">One team. From idea to online.</span>
+            <T className="small-note" path="sections.services.aside" />
           </div>
           <div
             className="service-tabs"
@@ -249,6 +295,7 @@ export default function App() {
                   aria-controls={`panel-${s.id}`}
                   tabIndex={activeService === s.id ? 0 : -1}
                   onClick={() => setActiveService(s.id)}
+                  {...selectAttr({ panel: "packages", service: s.id })}
                   onKeyDown={(e) => {
                     let next = index;
                     if (e.key === "ArrowRight")
@@ -278,82 +325,113 @@ export default function App() {
             className="service-panel"
             key={service.id}
           >
-            <div className="service-panel-heading">
-              <h3>{service.heading}</h3>
-              <p>{service.description}</p>
+            <div
+              className="service-panel-heading"
+              {...selectAttr({ panel: "packages", service: service.id })}
+            >
+              <T as="h3" path={`services.${serviceIndex}.heading`} />
+              <T
+                as="p"
+                path={`services.${serviceIndex}.description`}
+                multiline
+              />
             </div>
             <div className={`pricing-grid plans-${service.plans.length}`}>
-              {service.plans.map((plan) => (
-                <article
-                  key={plan.name}
-                  className={`plan ${plan.featured ? "plan-featured" : ""}`}
-                >
-                  <div className="plan-label">
-                    {plan.featured ? (
-                      <>
-                        <span className="plan-label-mark">↗</span> {plan.label}
-                      </>
-                    ) : (
-                      <span aria-hidden="true">&nbsp;</span>
-                    )}
-                  </div>
-                  <div className="plan-inner">
-                    <h4>{plan.name}</h4>
-                    <p className="plan-description">{plan.description}</p>
-                    <div
-                      className={`price ${plan.price === null ? "price-quote" : ""}`}
-                    >
-                      {plan.price === null ? (
-                        <span>Let’s talk.</span>
-                      ) : (
+              {service.plans.map((plan, planIndex) => {
+                const base = `services.${serviceIndex}.plans.${planIndex}`;
+                return (
+                  <article
+                    key={planIndex}
+                    className={`plan ${plan.featured ? "plan-featured" : ""}`}
+                    {...selectAttr({
+                      panel: "packages",
+                      service: service.id,
+                      plan: planIndex,
+                    })}
+                  >
+                    <div className="plan-label">
+                      {plan.featured ? (
                         <>
-                          <span className="price-from">
-                            {["hosting", "design", "support"].includes(
-                              service.id,
-                            )
-                              ? "FROM"
-                              : "AUD"}
-                          </span>
-                          <span className="price-amount">
-                            <span className="currency">$</span>
-                            {plan.price}
-                            <small>{plan.unit}</small>
-                          </span>
+                          <span className="plan-label-mark">↗</span>{" "}
+                          <T path={`${base}.label`} />
                         </>
+                      ) : (
+                        <span aria-hidden="true">&nbsp;</span>
                       )}
                     </div>
-                    <ul className="plan-features">
-                      {plan.features.map((feature) => (
-                        <li key={feature}>
-                          <CheckIcon size={16} weight="bold" />
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-                    <button
-                      className={`button ${plan.featured ? "button-yellow" : "button-outline"}`}
-                      onClick={() =>
-                        consult(
-                          service.title,
-                          `I'm interested in ${plan.name}.`,
-                        )
-                      }
-                    >
-                      {plan.price === null
-                        ? "Request a quote"
-                        : `Enquire about ${plan.name.replace(" Email", "")}`}
-                      <ArrowUpRightIcon size={18} />
-                    </button>
-                  </div>
-                </article>
-              ))}
+                    <div className="plan-inner">
+                      <T as="h4" path={`${base}.name`} />
+                      <T
+                        as="p"
+                        className="plan-description"
+                        path={`${base}.description`}
+                      />
+                      <div
+                        className={`price ${plan.price === null && !editing ? "price-quote" : ""}`}
+                      >
+                        {plan.price === null && !editing ? (
+                          <span>Let’s talk.</span>
+                        ) : (
+                          <>
+                            <span className="price-from">
+                              {["hosting", "design", "support"].includes(
+                                service.id,
+                              )
+                                ? "FROM"
+                                : "AUD"}
+                            </span>
+                            <span className="price-amount">
+                              <span className="currency">$</span>
+                              {editing ? (
+                                <T
+                                  path={`${base}.price`}
+                                  number
+                                  label={`${plan.name} price (leave empty for quote only)`}
+                                />
+                              ) : (
+                                formatPrice(plan.price!)
+                              )}
+                              <T as="small" path={`${base}.unit`} />
+                            </span>
+                          </>
+                        )}
+                      </div>
+                      <ul className="plan-features">
+                        {plan.features.map((_, i) => (
+                          <li key={i}>
+                            <CheckIcon size={16} weight="bold" />
+                            <T path={`${base}.features.${i}`} />
+                          </li>
+                        ))}
+                      </ul>
+                      <button
+                        className={`button ${plan.featured ? "button-yellow" : "button-outline"}`}
+                        onClick={() =>
+                          consult(
+                            service.title,
+                            `I'm interested in ${plan.name}.`,
+                          )
+                        }
+                      >
+                        {plan.price === null
+                          ? "Request a quote"
+                          : `Enquire about ${plan.name.replace(" Email", "")}`}
+                        <ArrowUpRightIcon size={18} />
+                      </button>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
             {service.id === "design" && (
-              <div className="logo-offer">
+              <div
+                className="logo-offer"
+                {...selectAttr({ panel: "packages", service: "logo" })}
+              >
                 <PaletteIcon size={40} weight="light" />
                 <div>
-                  <h4>{logoPackage.title}</h4>
-                  <p>{logoPackage.description}</p>
+                  <T as="h4" path="logoPackage.title" />
+                  <T as="p" path="logoPackage.description" multiline />
                 </div>
                 <button
                   onClick={() =>
@@ -364,11 +442,19 @@ export default function App() {
                   }
                   className="text-link"
                 >
-                  From ${logoPackage.price} AUD <ArrowUpRightIcon size={19} />
+                  {logoPackage.price === null
+                    ? "Request a quote"
+                    : `From $${formatPrice(logoPackage.price)} AUD`}{" "}
+                  <ArrowUpRightIcon size={19} />
                 </button>
               </div>
             )}
-            <p className="pricing-note">{service.note}</p>
+            <T
+              as="p"
+              className="pricing-note"
+              path={`services.${serviceIndex}.note`}
+              multiline
+            />
           </div>
         </section>
 
@@ -377,11 +463,14 @@ export default function App() {
           id="projects"
           aria-labelledby="projects-heading"
         >
-          <div className="section-title-row">
+          <div
+            className="section-title-row"
+            {...selectAttr({ panel: "text", group: "projects" })}
+          >
             <h2 id="projects-heading">
-              Different ideas.
+              <T path="sections.projects.heading" />
               <br />
-              <span className="muted">Same attention to detail.</span>
+              <T className="muted" path="sections.projects.headingMuted" />
             </h2>
             <a
               className="text-link"
@@ -391,155 +480,124 @@ export default function App() {
               Explore web design <ArrowUpRightIcon size={18} />
             </a>
           </div>
-          <p className="section-intro">
-            A business website, a new shopfront, or a smarter way to work.
-            Here’s what your next project could look like.
-          </p>
+          <T
+            as="p"
+            className="section-intro"
+            path="sections.projects.intro"
+            multiline
+          />
           <div className="project-grid">
-            {projects.map((p, index) => (
-              <button
-                key={p.id}
-                className={`project project-${p.id}`}
-                onClick={() => setProject(p)}
-                aria-label={`View ${p.type} example`}
-              >
-                <div className="project-image">
-                  <img
-                    src={p.image}
-                    alt={`${p.type} concept preview`}
-                    loading="lazy"
-                    width="1200"
-                    height="800"
-                  />
-                </div>
-                <div className="project-caption">
-                  <div>
-                    <span className="project-type">
-                      {p.type}{" "}
-                      <span className="example-label">
-                        / Concept {String(index + 1).padStart(2, "0")}
-                      </span>
-                    </span>
-                    <h3>{p.name}</h3>
+            {visibleProjects.map((p, index) => {
+              const i = projects.indexOf(p);
+              return (
+                <ProjectTag
+                  key={p.id}
+                  className={`project project-${p.id}`}
+                  onClick={editing ? undefined : () => setProject(p)}
+                  aria-label={editing ? undefined : `View ${p.type} example`}
+                  {...selectAttr({ panel: "showcase", project: i })}
+                >
+                  <div className="project-image">
+                    <img
+                      src={p.image}
+                      alt={`${p.type} concept preview`}
+                      loading="lazy"
+                      width="1200"
+                      height="800"
+                    />
                   </div>
-                  <span className="project-arrow">
-                    <ArrowUpRightIcon size={22} />
-                  </span>
-                </div>
-              </button>
-            ))}
+                  <div className="project-caption">
+                    <div>
+                      <span className="project-type">
+                        <T path={`projects.${i}.type`} />{" "}
+                        <span className="example-label">
+                          / Concept {String(index + 1).padStart(2, "0")}
+                        </span>
+                      </span>
+                      <T as="h3" path={`projects.${i}.name`} />
+                    </div>
+                    <span className="project-arrow">
+                      <ArrowUpRightIcon size={22} />
+                    </span>
+                  </div>
+                </ProjectTag>
+              );
+            })}
           </div>
-          <p className="small-note project-disclaimer">
-            Illustrative design concepts, not client case studies. Your project
-            will be designed around your own business.
-          </p>
+          <T
+            as="p"
+            className="small-note project-disclaimer"
+            path="sections.projects.disclaimer"
+            multiline
+          />
         </section>
 
         <section
           className="section infrastructure-section container reveal"
           id="about"
           aria-labelledby="about-heading"
+          {...selectAttr({ panel: "text", group: "about" })}
         >
           <div className="infrastructure-visual">
             <GlobeHemisphereEastIcon size={230} weight="thin" />
             <div className="location-grid">
-              <span>
-                <span className="location-line" />
-                Melbourne
-              </span>
-              <span>
-                <span className="location-line" />
-                Sydney
-              </span>
-              <span>
-                <span className="location-line" />
-                United States
-              </span>
-              <span>
-                <span className="location-line" />
-                United Kingdom
-              </span>
+              {sections.about.locations.map((_, i) => (
+                <span key={i}>
+                  <span className="location-line" />
+                  <T path={`sections.about.locations.${i}`} />
+                </span>
+              ))}
             </div>
           </div>
           <div className="infrastructure-copy">
-            <p className="eyebrow">LOCAL KNOW-HOW. GLOBAL REACH.</p>
-            <h2>
-              Close to your customers.
+            <T as="p" className="eyebrow" path="sections.about.eyebrow" />
+            <h2 id="about-heading">
+              <T path="sections.about.heading" />
               <br />
-              <span className="muted">Closer to your business.</span>
+              <T className="muted" path="sections.about.headingMuted" />
             </h2>
-            <p>
-              Australian expertise, with hosting in Melbourne, Sydney, the US
-              and the UK. We help put your website closer to the people who use
-              it.
-            </p>
+            <T as="p" path="sections.about.body" multiline />
             <div className="benefits">
-              <div>
-                <LightningIcon size={23} />
-                <div>
-                  <h3>A solid foundation</h3>
-                  <p>
-                    Virtualmin Pro on LEMP. Nginx, PHP and database tools for a
-                    capable, flexible hosting platform.
-                  </p>
-                </div>
-              </div>
-              <div>
-                <ShieldCheckIcon size={23} />
-                <div>
-                  <h3>The essentials, considered</h3>
-                  <p>
-                    SSL included. Domain, DNS, SFTP and backup options
-                    configured to suit your plan.
-                  </p>
-                </div>
-              </div>
-              <div>
-                <ChatCircleDotsIcon size={23} />
-                <div>
-                  <h3>Real people. Clear answers.</h3>
-                  <p>
-                    Talk directly with a team that can connect the dots across
-                    your website, email, network and phones.
-                  </p>
-                </div>
-              </div>
+              {sections.about.benefits.map((_, i) => {
+                const Icon = benefitIcons[i] || LightningIcon;
+                return (
+                  <div key={i}>
+                    <Icon size={23} />
+                    <div>
+                      <T as="h3" path={`sections.about.benefits.${i}.title`} />
+                      <T
+                        as="p"
+                        path={`sections.about.benefits.${i}.body`}
+                        multiline
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>
 
         <section
           className="section process-section container reveal"
+          id="process"
           aria-labelledby="process-heading"
+          {...selectAttr({ panel: "text", group: "process" })}
         >
           <h2 id="process-heading">
-            From “what if” <span className="muted">to what’s next.</span>
+            <T path="sections.process.heading" />{" "}
+            <T className="muted" path="sections.process.headingMuted" />
           </h2>
           <div className="process-grid">
-            <div>
-              <span className="process-number">01</span>
-              <h3>Let’s understand it.</h3>
-              <p>
-                A free 30-minute consultation to talk about your business, your
-                ideas and what you actually need.
-              </p>
-            </div>
-            <div>
-              <span className="process-number">02</span>
-              <h3>Make a clear plan.</h3>
-              <p>
-                We agree on features, scope and a quote. You know what’s
-                included before we get to work.
-              </p>
-            </div>
-            <div>
-              <span className="process-number">03</span>
-              <h3>Build. Launch. Support.</h3>
-              <p>
-                Bring the project to life, get it online, and keep the right
-                technical support within reach.
-              </p>
-            </div>
+            {sections.process.steps.map((_, i) => (
+              <div key={i}>
+                <span className="process-number">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <T as="h3" path={`sections.process.steps.${i}.title`} />
+                <T as="p" path={`sections.process.steps.${i}.body`} multiline />
+              </div>
+            ))}
           </div>
         </section>
 
@@ -548,63 +606,98 @@ export default function App() {
           id="faq"
           aria-labelledby="faq-heading"
         >
-          <div className="faq-intro">
+          <div
+            className="faq-intro"
+            {...selectAttr({ panel: "text", group: "faq" })}
+          >
             <h2 id="faq-heading">
-              Good questions.
+              <T path="sections.faq.heading" />
               <br />
-              <span className="muted">Straight answers.</span>
+              <T className="muted" path="sections.faq.headingMuted" />
             </h2>
-            <p>
-              Still figuring things out?
-              <br />
-              That’s what the consultation is for.
-            </p>
+            <T as="p" path="sections.faq.intro" multiline />
             <button className="text-link" onClick={() => consult()}>
               Free consultation <ArrowUpRightIcon size={19} />
             </button>
           </div>
           <div className="faq-list">
-            {faqs.map((faq) => (
-              <details key={faq.question}>
-                <summary>
-                  {faq.question}
-                  <PlusIcon className="faq-plus" size={20} />
-                  <MinusIcon className="faq-minus" size={20} />
-                </summary>
-                <p>{faq.answer}</p>
-              </details>
-            ))}
+            {faqs.map((_, i) =>
+              editing ? (
+                <div
+                  key={i}
+                  className="faq-edit"
+                  {...selectAttr({ panel: "faqs", faq: i })}
+                >
+                  <T as="div" className="faq-q" path={`faqs.${i}.question`} />
+                  <T
+                    as="div"
+                    className="faq-a"
+                    path={`faqs.${i}.answer`}
+                    rich
+                  />
+                </div>
+              ) : (
+                <details key={i}>
+                  <summary>
+                    {faqs[i].question}
+                    <PlusIcon className="faq-plus" size={20} />
+                    <MinusIcon className="faq-minus" size={20} />
+                  </summary>
+                  <T
+                    as="div"
+                    className="faq-a"
+                    path={`faqs.${i}.answer`}
+                    rich
+                  />
+                </details>
+              ),
+            )}
           </div>
         </section>
 
-        <section className="consultation-section container reveal">
+        <section
+          className="consultation-section container reveal"
+          id="contact"
+          {...selectAttr({ panel: "text", group: "cta" })}
+        >
           <div className="consultation-box">
             <span className="consultation-icon" aria-hidden="true">
               <ArrowUpRightIcon size={82} weight="light" />
             </span>
             <div>
               <p className="consultation-label">
-                <ClockIcon size={17} /> 30 MINUTES. ZERO PRESSURE.
+                <ClockIcon size={17} /> <T path="sections.cta.label" />
               </p>
-              <h2>
-                Let’s talk about
-                <br />
-                your next move.
-              </h2>
-              <p>Bring the idea. We’ll help you work out the rest.</p>
+              <T as="h2" path="sections.cta.heading" multiline />
+              <T as="p" path="sections.cta.body" multiline />
               <button className="button button-dark" onClick={() => consult()}>
-                Free consultation <ArrowUpRightIcon size={20} />
+                <T path="sections.cta.button" /> <ArrowUpRightIcon size={20} />
               </button>
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="site-footer container">
+      <footer
+        className="site-footer container"
+        {...selectAttr({ panel: "text", group: "brand" })}
+      >
         <div className="footer-main">
           <div>
             <Wordmark />
-            <p>Good design. Solid hosting. Real support.</p>
+            <T as="p" path="brand.tagline" />
+            {(brand.email || brand.phone) && (
+              <p className="footer-contact">
+                {brand.email && (
+                  <a href={`mailto:${brand.email}`}>{brand.email}</a>
+                )}
+                {brand.phone && (
+                  <a href={`tel:${brand.phone.replace(/[^+\d]/g, "")}`}>
+                    {brand.phone}
+                  </a>
+                )}
+              </p>
+            )}
           </div>
           <div className="footer-links">
             <a href="#services">Our services</a>
@@ -616,14 +709,14 @@ export default function App() {
         </div>
         <div className="footer-bottom">
           <span>
-            © {new Date().getFullYear()} WebTechPros. All rights reserved.
+            © {new Date().getFullYear()} {brand.name}. All rights reserved.
           </span>
-          <span>Built for your next move.</span>
+          <T path="brand.footerNote" />
           <button onClick={() => setPrivacy(true)}>Privacy & pricing</button>
         </div>
       </footer>
 
-      {!chatLoaded && (
+      {!chatLoaded && !editing && settings.showChat && (
         <div className="chat-launcher-wrap">
           {chatState === "error" && (
             <p role="alert" className="chat-error">
@@ -669,14 +762,16 @@ export default function App() {
             alt={`${project.type} concept, full preview`}
           />
           <div className="modal-actions">
-            <a
-              href={`/examples/${project.id}.html`}
-              target="_blank"
-              rel="noreferrer"
-              className="button button-outline"
-            >
-              Open concept <ArrowUpRightIcon size={18} />
-            </a>
+            {project.url && (
+              <a
+                href={project.url}
+                target="_blank"
+                rel="noreferrer"
+                className="button button-outline"
+              >
+                Open live concept <ArrowUpRightIcon size={18} />
+              </a>
+            )}
             <button
               className="button button-yellow"
               onClick={() => {
@@ -791,6 +886,7 @@ function ConsultationDialog({
   const [error, setError] = useState("");
   const [caseNumber, setCaseNumber] = useState("");
   const [service, setService] = useState(initial.service);
+  const { services } = useSite().content;
   const options = [
     "Not sure yet",
     ...services.map((s) => s.title),

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Documentation | Tallyflow · WebTechPros concept</title>
+<meta name="description" content="Invoicing that gets you paid faster.">
+<link rel="stylesheet" href="../shared/concept.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body class="saas page-docs">
+<div class="concept-bar"><span>WebTechPros design concept · sample business and data</span><a href="/#projects">← Back to WebTechPros</a></div>
+<header class="site-header"><div class="wrap head">
+<a class="logo" href="index.html"><span aria-hidden="true"></span>Tallyflow</a>
+<button class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav">☰</button>
+<nav id="nav" class="site-nav" aria-label="Main"><a href="index.html">Product</a><a href="pricing.html">Pricing</a><a href="docs.html" aria-current="page">Docs</a><a href="signup.html?mode=login" class="login">Log in</a></nav>
+<a class="btn small hide-sm" href="signup.html">Start free trial</a>
+</div></header>
+<main id="main">
+<section class="wrap docs">
+<aside class="docs-nav"><label class="sr-only" for="doc-search">Search docs</label><input id="doc-search" type="search" placeholder="Search docs…"><nav aria-label="Docs"><a href="#getting-started">Getting started</a><a href="#invoices">Creating invoices</a><a href="#payments">Accepting payments</a><a href="#reminders">Automatic reminders</a><a href="#webhooks">Webhooks</a><a href="#api-keys">API keys</a></nav><p class="none" hidden>No matches.</p></aside>
+<div class="docs-body"><h1>Tallyflow docs</h1><p class="lead">Guides and API reference for the Tallyflow REST API (v1).</p>
+<article id="getting-started" class="doc"><h2>Getting started</h2><p>Create your account, add your business details and send your first invoice in under five minutes.</p><div class="code"><button class="copy" aria-label="Copy code">Copy</button><pre><code>curl https://api.tallyflow.example/v1/me \
+  -H "Authorization: Bearer $TALLYFLOW_KEY"</code></pre></div><p class="helpful">Was this helpful? <button data-h="yes">👍</button><button data-h="no">👎</button></p></article><article id="invoices" class="doc"><h2>Creating invoices</h2><p>Invoices have line items, a due date and a client. Drafts can be edited until they are sent.</p><div class="code"><button class="copy" aria-label="Copy code">Copy</button><pre><code>POST /v1/invoices
+{
+  "client_id": "cl_82hf",
+  "due_in_days": 14,
+  "items": [{ "description": "Design", "quantity": 10, "unit_price": 120 }]
+}</code></pre></div><p class="helpful">Was this helpful? <button data-h="yes">👍</button><button data-h="no">👎</button></p></article><article id="payments" class="doc"><h2>Accepting payments</h2><p>Turn on card and bank payments in Settings → Payments. Paid invoices are reconciled automatically.</p><div class="code"><button class="copy" aria-label="Copy code">Copy</button><pre><code>GET /v1/invoices/inv_19a/payments</code></pre></div><p class="helpful">Was this helpful? <button data-h="yes">👍</button><button data-h="no">👎</button></p></article><article id="reminders" class="doc"><h2>Automatic reminders</h2><p>Reminders are sent 3 days before, on, and 7 days after the due date. You can customise the wording.</p><div class="code"><button class="copy" aria-label="Copy code">Copy</button><pre><code>PATCH /v1/settings/reminders
+{ "schedule": [-3, 0, 7] }</code></pre></div><p class="helpful">Was this helpful? <button data-h="yes">👍</button><button data-h="no">👎</button></p></article><article id="webhooks" class="doc"><h2>Webhooks</h2><p>Receive an HTTPS POST when an invoice is paid, overdue or viewed. Verify the signature header.</p><div class="code"><button class="copy" aria-label="Copy code">Copy</button><pre><code>{
+  "type": "invoice.paid",
+  "data": { "id": "inv_19a", "amount": 1320 }
+}</code></pre></div><p class="helpful">Was this helpful? <button data-h="yes">👍</button><button data-h="no">👎</button></p></article><article id="api-keys" class="doc"><h2>API keys</h2><p>Create keys in Settings → Developers. Keys can be scoped to read-only and revoked at any time.</p><div class="code"><button class="copy" aria-label="Copy code">Copy</button><pre><code>export TALLYFLOW_KEY=tf_live_xxxxxxxx</code></pre></div><p class="helpful">Was this helpful? <button data-h="yes">👍</button><button data-h="no">👎</button></p></article>
+</div></section>
+</main>
+<footer class="site-footer"><div class="wrap foot">
+<p class="logo"><span aria-hidden="true"></span>Tallyflow</p>
+<div><strong>Product</strong><a href="index.html#features">Features</a><a href="pricing.html">Pricing</a><a href="docs.html">API docs</a></div>
+<div><strong>Company</strong><a href="index.html#customers">Customers</a><a href="signup.html">Start free</a><span>Made in Sydney</span></div>
+</div><p class="wrap fine">Design concept for a sample software product. Accounts are not created.</p></footer>
+<script src="../shared/concept.js"></script>
+<script src="site.js"></script>
+</body>
+</html>

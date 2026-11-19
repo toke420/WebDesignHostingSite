@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Get a free quote | Brightwire Electrical · WebTechPros concept</title>
+<meta name="description" content="Licensed electricians across Melbourne's east. 24/7 emergency call-outs.">
+<link rel="stylesheet" href="../shared/concept.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body class="trades page-quote">
+<div class="concept-bar"><span>WebTechPros design concept · sample business and data</span><a href="/#projects">← Back to WebTechPros</a></div>
+<div class="emergency"><div class="wrap"><span>⚡ 24/7 emergency electrician</span><a href="tel:0400000000">Call 0400 000 000</a></div></div>
+<header class="site-header"><div class="wrap head">
+<a class="logo" href="index.html"><span aria-hidden="true">B</span>Brightwire<small>Electrical</small></a>
+<button class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav">☰</button>
+<nav id="nav" class="site-nav" aria-label="Main"><a href="index.html">Home</a><a href="services.html">Services</a><a href="areas.html">Service areas</a><a href="quote.html" aria-current="page">Get a quote</a></nav>
+<a class="btn hide-sm" href="quote.html">Free quote</a>
+</div></header>
+<main id="main">
+<section class="page-head"><div class="wrap"><h1>Get a free quote</h1><p class="lead">Takes about 2 minutes. We reply within 2 business hours.</p></div></section>
+<section class="section wrap quote-wrap">
+<ol class="progress" aria-label="Progress"><li class="active">Job</li><li>Details</li><li>Contact</li><li>Review</li></ol>
+<form id="quote" novalidate>
+ <fieldset data-step="0"><legend>What do you need?</legend><div class="choices"><label class="choice"><input type="radio" name="type" value="Emergency call-outs" required><span><b aria-hidden="true">⚡</b>Emergency call-outs</span></label><label class="choice"><input type="radio" name="type" value="Lighting" required><span><b aria-hidden="true">💡</b>Lighting</span></label><label class="choice"><input type="radio" name="type" value="Power points & switchboards" required><span><b aria-hidden="true">🔌</b>Power points & switchboards</span></label><label class="choice"><input type="radio" name="type" value="Solar & batteries" required><span><b aria-hidden="true">☀️</b>Solar & batteries</span></label><label class="choice"><input type="radio" name="type" value="Renovations & new builds" required><span><b aria-hidden="true">🏠</b>Renovations & new builds</span></label><label class="choice"><input type="radio" name="type" value="Safety inspections" required><span><b aria-hidden="true">🧯</b>Safety inspections</span></label><label class="choice"><input type="radio" name="type" value="Emergency"><span><b aria-hidden="true">🚨</b>Emergency</span></label></div></fieldset>
+ <fieldset data-step="1" hidden><legend>Tell us about the job</legend>
+  <label>Property type<select name="property"><option>House</option><option>Apartment / unit</option><option>Business</option><option>Rental property</option></select></label>
+  <label>When do you need it?<select name="when"><option>As soon as possible</option><option>This week</option><option>In the next month</option><option>Just planning</option></select></label>
+  <label>Describe the job<textarea name="details" rows="4" required minlength="10" placeholder="e.g. 6 new LED downlights in the living room"></textarea></label></fieldset>
+ <fieldset data-step="2" hidden><legend>Your details</legend>
+  <label>Name<input name="name" required autocomplete="name"></label><label>Mobile<input name="phone" type="tel" required autocomplete="tel"></label>
+  <label>Suburb<input name="suburb" required list="suburbs"></label><datalist id="suburbs"></datalist>
+  <label class="inline"><input type="checkbox" name="sms" checked> Text me when the electrician is on the way</label></fieldset>
+ <fieldset data-step="3" hidden><legend>Check and send</legend><dl id="review" class="review"></dl></fieldset>
+ <div class="nav-buttons"><button type="button" class="btn outline" id="back" hidden>Back</button><button type="button" class="btn" id="next">Next</button></div>
+</form>
+<div id="sent" class="sent" hidden tabindex="-1"><h2>Quote request sent ✓</h2><p>Reference <strong id="qref"></strong>. In a real site, a Brightwire electrician would text you within 2 business hours.</p><a class="btn" href="index.html">Back to home</a></div>
+</section>
+</main>
+<footer class="site-footer"><div class="wrap foot">
+<div><p class="logo"><span aria-hidden="true">B</span>Brightwire<small>Electrical</small></p><p>REC 12345 · ABN 00 000 000 000<br>Fully insured · Master Electricians member</p></div>
+<div><strong>Contact</strong><p><a href="tel:0400000000">0400 000 000</a><br>jobs@brightwire.example<br>Mon–Fri 7am–5pm, emergencies 24/7</p></div>
+<div><strong>Pages</strong><a href="index.html">Home</a><a href="services.html">Services</a><a href="areas.html">Service areas</a><a href="quote.html">Get a quote</a></div>
+</div><p class="wrap fine">Design concept for a sample business. Licence numbers are placeholders.</p></footer>
+<script src="../shared/concept.js"></script>
+<script src="site.js"></script>
+</body>
+</html>

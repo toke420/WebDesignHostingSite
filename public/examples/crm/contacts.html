@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Contacts | Pipeline CRM · WebTechPros concept</title>
+<meta name="description" content="A focused CRM for small sales teams.">
+<link rel="stylesheet" href="../shared/concept.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body class="crm page-contacts">
+<div class="concept-bar"><span>WebTechPros design concept · sample business and data</span><a href="/#projects">← Back to WebTechPros</a></div>
+<header class="site-header"><div class="head">
+<a class="logo" href="index.html"><span aria-hidden="true">P</span>Pipeline</a>
+<button class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav">☰</button>
+<nav id="nav" class="site-nav" aria-label="Main"><a href="index.html">◧ Dashboard</a><a href="contacts.html" aria-current="page">☺ Contacts</a><a href="pipeline.html">▤ Pipeline</a></nav>
+<div class="me"><button class="btn small" data-new-contact>+ New contact</button><span class="avatar" title="Signed in as Alex (demo)">AK</span></div>
+</div></header>
+<main id="main">
+<div class="page"><div class="page-head"><h1>Contacts <span class="count" id="c-count"></span></h1><button class="btn" data-new-contact>+ New contact</button></div>
+<div class="toolbar"><label class="sr-only" for="search">Search contacts</label><input id="search" type="search" placeholder="Search name, company or email…"><label>Stage <select id="stage-filter"><option value="">All stages</option><option>Lead</option><option>Qualified</option><option>Proposal</option><option>Won</option><option>Lost</option></select></label></div>
+<div class="table-wrap"><table class="table"><thead><tr><th><button data-sort="name">Name</button></th><th><button data-sort="company">Company</button></th><th>Stage</th><th><button data-sort="value">Deal value</button></th><th><button data-sort="updated">Last activity</button></th></tr></thead><tbody id="rows"></tbody></table></div>
+<p class="muted empty" hidden>No contacts match.</p></div>
+</main>
+<footer class="site-footer"><p>Design concept · all people and companies are fictional · data stays in this browser. <button class="linkish" id="reset-data">Reset demo data</button></p></footer>
+<dialog id="new-contact" aria-labelledby="nc-title"><form method="dialog" id="nc-form" novalidate><h2 id="nc-title">New contact</h2>
+<label>Name<input name="name" required></label><label>Company<input name="company" required></label><label>Email<input type="email" name="email" required></label>
+<label>Deal value (AUD)<input type="number" name="value" min="0" step="100" value="5000"></label><label>Stage<select name="stage"><option>Lead</option><option>Qualified</option><option>Proposal</option><option>Won</option></select></label>
+<div class="dlg-actions"><button type="button" class="btn ghost" data-close>Cancel</button><button class="btn" value="save">Save contact</button></div></form></dialog>
+<script src="../shared/concept.js"></script>
+<script src="site.js"></script>
+</body>
+</html>

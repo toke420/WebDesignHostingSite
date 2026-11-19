@@ -19,6 +19,17 @@ const backend = spawn(resolve(".local/bin/helpdesk"), [], {
   env,
   stdio: "inherit",
 });
+// Disposable content server for the /admin tests (fixed, test-only password).
+const contentData = mkdtempSync(resolve(tmpdir(), "webtechpros-content-"));
+const content = spawn(process.execPath, ["server/content-server.mjs"], {
+  env: {
+    ...process.env,
+    CONTENT_ADDR: "127.0.0.1:8091",
+    CONTENT_DATA_DIR: contentData,
+    ADMIN_PASSWORD: "test-admin-password",
+  },
+  stdio: "inherit",
+});
 let site;
 let stopped = false;
 function stop() {
@@ -26,6 +37,8 @@ function stop() {
   stopped = true;
   site?.kill("SIGTERM");
   backend.kill("SIGTERM");
+  content.kill("SIGTERM");
+  rmSync(contentData, { recursive: true, force: true });
 }
 backend.on("exit", () => {
   rmSync(data, { recursive: true, force: true });
@@ -73,7 +86,11 @@ site = spawn(
     "--strictPort",
   ],
   {
-    env: { ...process.env, HELPDESK_PROXY_TARGET: "http://127.0.0.1:8081" },
+    env: {
+      ...process.env,
+      HELPDESK_PROXY_TARGET: "http://127.0.0.1:8081",
+      CONTENT_PROXY_TARGET: "http://127.0.0.1:8091",
+    },
     stdio: "inherit",
   },
 );

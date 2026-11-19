@@ -158,6 +158,10 @@ test("keyboard tabs, FAQ disclosures, project images and modal focus work", asyn
   for (const name of [
     "Business website",
     "Ecommerce store",
+    "Restaurant & hospitality",
+    "Trades & services",
+    "Health clinic",
+    "Software & SaaS",
     "Blog & publication",
     "CRM application",
   ]) {
@@ -217,4 +221,123 @@ test("mobile navigation, forms and all sections fit narrow screens", async ({
       ).toBeTruthy();
     }
   }
+});
+
+test("admin: sign in, edit a price and an FAQ, publish, and the live site updates", async ({
+  page,
+  context,
+}) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto("/admin");
+  await page.getByLabel("Password").fill("wrong-password");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page.getByRole("alert")).toContainText("not correct");
+  await page.getByLabel("Password").fill("test-admin-password");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(
+    page.getByRole("heading", { name: /Welcome back/ }),
+  ).toBeVisible();
+
+  // Inline edit directly in the page preview.
+  const preview = page.frameLocator("iframe");
+  const price = preview.locator('[data-edit-path="services.0.plans.0.price"]');
+  await price.click();
+  await page.keyboard.press("ControlOrMeta+A");
+  await page.keyboard.type("12");
+  await page.keyboard.press("Enter");
+  await expect(
+    page.getByRole("heading", { name: "Packages & prices" }),
+  ).toBeVisible();
+  await expect(page.locator("#plan-hosting-0 .money input")).toHaveValue("12");
+
+  // Form edit, mirrored live in the preview.
+  await page.getByRole("button", { name: "Questions & answers" }).click();
+  await page
+    .getByLabel("Question")
+    .first()
+    .fill("What happens in the free chat?");
+  await expect(
+    preview.locator('[data-edit-path="faqs.0.question"]'),
+  ).toHaveText("What happens in the free chat?");
+  await page.getByRole("button", { name: "Add a question" }).click();
+  await page.getByLabel("Question").last().fill("Do you build online stores?");
+
+  // Drafts are private until published.
+  await expect(page.locator(".status-saved")).toBeVisible({ timeout: 5000 });
+  const live = await context.newPage();
+  await live.goto("/");
+  await expect(live.locator(".price-amount").first()).toHaveText("$10/ month");
+
+  await page.getByRole("button", { name: "Publish changes" }).click();
+  await expect(
+    page.getByText("Published! Your changes are now live."),
+  ).toBeVisible();
+  await live.reload();
+  await expect(live.locator(".price-amount").first()).toHaveText("$12/ month");
+  await expect(live.locator("summary").first()).toContainText(
+    "What happens in the free chat?",
+  );
+  await expect(live.locator("summary").last()).toContainText(
+    "Do you build online stores?",
+  );
+
+  // History keeps the previous version and can restore it into the draft.
+  await page.getByRole("button", { name: "History" }).click();
+  page.once("dialog", (d) => d.accept());
+  await page
+    .getByRole("button", { name: "Restore", exact: true })
+    .first()
+    .click();
+  await expect(page.getByText("Version restored")).toBeVisible();
+  await page.getByRole("button", { name: "Publish changes" }).click();
+  await expect(page.getByText("Published!")).toBeVisible();
+  await live.reload();
+  await expect(live.locator(".price-amount").first()).toHaveText("$10/ month");
+  expect(errors).toEqual([]);
+});
+
+test("admin API rejects unauthenticated and cross-site writes", async ({
+  request,
+}) => {
+  const draft = await request.get("/api/admin/draft");
+  expect(draft.status()).toBe(401);
+  const crossSite = await request.put("/api/admin/draft", {
+    headers: {
+      Origin: "https://evil.example",
+      "Content-Type": "application/json",
+    },
+    data: { content: {} },
+  });
+  expect(crossSite.status()).toBe(403);
+  const content = await request.get("/api/content");
+  expect((await content.json()).services.length).toBe(5);
+});
+
+test("example sites open from the showcase and their pages work", async ({
+  page,
+  context,
+}) => {
+  await page.goto("/");
+  await page
+    .getByRole("button", { name: "View Restaurant & hospitality example" })
+    .click();
+  const [site] = await Promise.all([
+    context.waitForEvent("page"),
+    page.getByRole("link", { name: "Open live concept" }).click(),
+  ]);
+  await site.waitForLoadState();
+  await expect(site).toHaveURL(/\/examples\/restaurant\/$/);
+  await site
+    .getByRole("navigation", { name: "Main" })
+    .getByRole("link", { name: "Menu" })
+    .click();
+  await site.getByRole("tab", { name: "Dinner" }).click();
+  await expect(site.getByRole("tabpanel")).toContainText("Dry-aged ribeye");
+
+  await site.goto("/examples/store/shop.html");
+  await site.locator('[data-add="loop"]').click();
+  await expect(site.locator(".cart-count").first()).toHaveText("1");
+  await site.goto("/examples/store/cart.html");
+  await expect(site.locator(".line")).toHaveCount(1);
 });

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Reservations | Ember &amp; Salt · WebTechPros concept</title>
+<meta name="description" content="Wood-fired dining in Fitzroy.">
+<link rel="stylesheet" href="../shared/concept.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body class="restaurant page-reservations">
+<div class="concept-bar"><span>WebTechPros design concept · sample business and data</span><a href="/#projects">← Back to WebTechPros</a></div>
+<header class="site-header"><div class="wrap head">
+<a class="logo" href="index.html">Ember <em>&amp;</em> Salt</a>
+<button class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav">☰</button>
+<nav id="nav" class="site-nav" aria-label="Main"><a href="index.html">Home</a><a href="menu.html">Menu</a><a href="reservations.html" aria-current="page">Reservations</a><a href="events.html">Private dining</a></nav>
+<a class="btn small hide-sm" href="reservations.html">Book a table</a>
+</div></header>
+<main id="main">
+<section class="page-hero wrap"><p class="kicker">Reservations</p><h1>Book a table</h1><p class="lead">Tables are held for 15 minutes. For 8 or more guests, see <a href="events.html">private dining</a>.</p></section>
+<section class="wrap booking">
+<form id="booking" novalidate>
+  <div class="row"><label>Guests<select name="guests"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option></select></label><label>Date<input type="date" name="date" required></label></div>
+  <fieldset class="slots"><legend>Available times</legend><div id="slots" class="slot-grid"></div><p id="slot-note" class="note"></p></fieldset>
+  <div class="row"><label>Name<input name="name" required autocomplete="name"></label><label>Mobile<input name="phone" type="tel" required autocomplete="tel"></label></div>
+  <label>Email<input name="email" type="email" required autocomplete="email"></label>
+  <label>Occasion or dietary needs<textarea name="notes" rows="3" placeholder="Birthday, anniversary, allergies…"></textarea></label>
+  <button class="btn" type="submit">Confirm booking</button>
+</form>
+<div id="booked" class="booked" hidden tabindex="-1"><p class="kicker">You're booked</p><h2 id="booked-title"></h2><p>Reference <strong id="ref"></strong>. In a real site you'd receive an SMS confirmation and a reminder the day before.</p><a class="btn ghost" href="menu.html">Browse the menu</a></div>
+<aside class="info-card"><h3>Good to know</h3><ul><li>Kitchen closes 9:30pm</li><li>Children welcome until 8pm</li><li>Wheelchair accessible, step-free entry</li><li>Cancellations: 24 hours' notice please</li></ul></aside>
+</section>
+</main>
+<footer class="site-footer"><div class="wrap foot">
+<div><p class="logo">Ember <em>&amp;</em> Salt</p><p>214 Gertrude Street, Fitzroy VIC 3065<br>(03) 9000 4455</p></div>
+<div><strong>Hours</strong><p>Wed–Thu 5pm–late<br>Fri–Sun 12pm–late<br>Mon–Tue closed</p></div>
+<div><strong>Follow</strong><p>@emberandsalt<br>Newsletter: seasonal menus &amp; events</p></div>
+</div><p class="wrap fine">Design concept for a sample restaurant. Bookings are not real.</p></footer>
+<script src="../shared/concept.js"></script>
+<script src="site.js"></script>
+</body>
+</html>

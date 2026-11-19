@@ -1,5 +1,6 @@
 import { spawn } from "node:child_process";
-import { existsSync, readFileSync, mkdirSync } from "node:fs";
+import { existsSync, readFileSync, mkdirSync, writeFileSync } from "node:fs";
+import { randomBytes } from "node:crypto";
 import { resolve } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 import { setup, root, local, binary } from "./setup-helpdesk.mjs";
@@ -99,6 +100,7 @@ async function main() {
       "Helpdesk is healthy. Staff inbox: port 8080. Credentials: .local/admin.json.",
     );
   }
+  if (!process.env.CONTENT_PROXY_TARGET && !exiting) await startContentServer();
   if (!exiting)
     start(
       process.execPath,
@@ -106,6 +108,46 @@ async function main() {
       process.env,
     );
 }
+// Content server for /admin. The local admin password lives in .local/content-admin.json.
+async function startContentServer() {
+  const file = resolve(local, "content-admin.json");
+  mkdirSync(local, { recursive: true, mode: 0o700 });
+  if (!existsSync(file))
+    writeFileSync(
+      file,
+      JSON.stringify(
+        {
+          url: "http://localhost:5173/admin/",
+          password: randomBytes(15).toString("base64url"),
+        },
+        null,
+        2,
+      ),
+      { mode: 0o600 },
+    );
+  const { password } = JSON.parse(readFileSync(file, "utf8"));
+  start(process.execPath, ["server/content-server.mjs"], {
+    ...process.env,
+    CONTENT_ADDR: "127.0.0.1:8090",
+    CONTENT_DATA_DIR: resolve(root, ".data/content"),
+    ADMIN_PASSWORD: password,
+  });
+  for (let i = 0; i < 40 && !exiting; i++) {
+    try {
+      if ((await fetch("http://127.0.0.1:8090/healthz")).ok) {
+        console.log(
+          "Content server is healthy. Admin: http://localhost:5173/admin/ (password in .local/content-admin.json).",
+        );
+        return;
+      }
+    } catch {
+      /* starting */
+    }
+    await delay(150);
+  }
+  throw new Error("The content server did not start. Review the output above.");
+}
+
 main().catch((error) => {
   console.error(error.message);
   stop(1);

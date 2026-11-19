@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Dashboard | Pipeline CRM · WebTechPros concept</title>
+<meta name="description" content="A focused CRM for small sales teams.">
+<link rel="stylesheet" href="../shared/concept.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body class="crm page-index">
+<div class="concept-bar"><span>WebTechPros design concept · sample business and data</span><a href="/#projects">← Back to WebTechPros</a></div>
+<header class="site-header"><div class="head">
+<a class="logo" href="index.html"><span aria-hidden="true">P</span>Pipeline</a>
+<button class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav">☰</button>
+<nav id="nav" class="site-nav" aria-label="Main"><a href="index.html" aria-current="page">◧ Dashboard</a><a href="contacts.html">☺ Contacts</a><a href="pipeline.html">▤ Pipeline</a></nav>
+<div class="me"><button class="btn small" data-new-contact>+ New contact</button><span class="avatar" title="Signed in as Alex (demo)">AK</span></div>
+</div></header>
+<main id="main">
+<div class="page"><div class="page-head"><div><h1>Good <span id="greet">day</span>, Alex</h1><p class="muted" id="today"></p></div><a class="btn ghost" href="pipeline.html">Open pipeline →</a></div>
+<section class="kpis" id="kpis"></section>
+<section class="grid2"><div class="panel"><h2>Revenue won, last 6 months</h2><svg id="chart" viewBox="0 0 600 220" role="img" aria-label="Bar chart of revenue won per month"></svg></div>
+<div class="panel"><h2>Today's tasks</h2><ul class="tasks" id="tasks"></ul><form id="task-form" class="task-add"><label class="sr-only" for="task-in">New task</label><input id="task-in" placeholder="Add a task and press Enter"></form></div></section>
+<section class="panel"><h2>Recently updated</h2><div id="recent" class="recent"></div></section></div>
+</main>
+<footer class="site-footer"><p>Design concept · all people and companies are fictional · data stays in this browser. <button class="linkish" id="reset-data">Reset demo data</button></p></footer>
+<dialog id="new-contact" aria-labelledby="nc-title"><form method="dialog" id="nc-form" novalidate><h2 id="nc-title">New contact</h2>
+<label>Name<input name="name" required></label><label>Company<input name="company" required></label><label>Email<input type="email" name="email" required></label>
+<label>Deal value (AUD)<input type="number" name="value" min="0" step="100" value="5000"></label><label>Stage<select name="stage"><option>Lead</option><option>Qualified</option><option>Proposal</option><option>Won</option></select></label>
+<div class="dlg-actions"><button type="button" class="btn ghost" data-close>Cancel</button><button class="btn" value="save">Save contact</button></div></form></dialog>
+<script src="../shared/concept.js"></script>
+<script src="site.js"></script>
+</body>
+</html>

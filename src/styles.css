@@ -297,7 +297,7 @@ p {
   margin-top: 27px;
   white-space: nowrap;
 }
-.hero h1 > span {
+.hero h1 > span.hero-accent {
   color: var(--yellow);
 }
 .hero-intro {
@@ -1918,4 +1918,128 @@ p {
   .site-header {
     height: 80px;
   }
+}
+
+/* ---------- Content additions ---------- */
+.announcement {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: var(--yellow);
+  color: #111210;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+.announcement a {
+  text-decoration: underline;
+}
+.announcement.is-hidden-live {
+  opacity: 0.55;
+}
+.faq-a p,
+.faq-a li {
+  font-size: 12px;
+  color: #b9bdae;
+  line-height: 1.9;
+}
+.faq-a p {
+  margin-bottom: 14px;
+}
+.faq-a ul,
+.faq-a ol {
+  margin: 0 0 18px;
+  padding-left: 20px;
+}
+.faq-a a {
+  color: var(--yellow);
+  text-decoration: underline;
+}
+.faq-list details .faq-a {
+  padding-bottom: 10px;
+}
+.footer-contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+}
+.footer-contact a:hover {
+  color: var(--yellow);
+}
+.consultation-box h2 {
+  white-space: pre-line;
+}
+@media (min-width: 1180px) {
+  .project-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 34px 22px;
+  }
+  .project-image {
+    padding: 18px 18px 0;
+  }
+  .project h3 {
+    font-size: 16px;
+  }
+}
+.project-restaurant .project-image {
+  background: #3a2a24;
+}
+.project-trades .project-image {
+  background: #2b3140;
+}
+.project-clinic .project-image {
+  background: #253532;
+}
+.project-saas .project-image {
+  background: #2e2a3e;
+}
+
+/* ---------- Admin visual editor (inside the preview frame) ---------- */
+.is-edit-mode .reveal {
+  opacity: 1 !important;
+  transform: none !important;
+}
+.is-edit-mode html {
+  scroll-behavior: auto;
+}
+.is-editable {
+  outline: 1px dashed transparent;
+  outline-offset: 3px;
+  border-radius: 2px;
+  cursor: text;
+  transition:
+    outline-color 0.15s,
+    background 0.15s;
+  min-width: 1ch;
+}
+.is-editable:hover {
+  outline-color: #efd92999;
+}
+.is-editable:focus {
+  outline: 2px solid var(--yellow);
+  background: #efd92914;
+}
+.is-editable:empty::before {
+  content: attr(data-placeholder);
+  opacity: 0.45;
+}
+.is-edit-mode [data-select] {
+  cursor: pointer;
+}
+.is-edit-mode [data-select]:hover {
+  box-shadow: 0 0 0 1px #efd92933;
+}
+.faq-edit {
+  border-bottom: 1px solid var(--line);
+  padding-block: 18px;
+}
+.faq-edit:first-child {
+  border-top: 1px solid var(--line);
+}
+.faq-q {
+  font-size: 12px;
+  font-weight: 650;
+  margin-bottom: 10px;
 }
