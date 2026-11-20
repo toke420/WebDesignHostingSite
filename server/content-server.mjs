@@ -96,6 +96,18 @@ function init() {
     );
   if (!existsSync(paths.draft))
     writeAtomic(paths.draft, readFileSync(paths.published));
+  // Bring saved content up to the current format (adds new sections such as
+  // pages, blog and menus with their defaults; keeps everything already edited).
+  for (const [file, mode] of [
+    [paths.published, 0o644],
+    [paths.draft, 0o600],
+  ]) {
+    const before = readFileSync(file, "utf8");
+    const after = JSON.stringify(
+      normalizeContent(JSON.parse(before), defaults),
+    );
+    if (after !== before) writeAtomic(file, after, mode);
+  }
   if (!existsSync(paths.admin)) {
     if (process.env.ADMIN_PASSWORD) setPassword(process.env.ADMIN_PASSWORD);
     else {
@@ -210,7 +222,7 @@ async function readJsonBody(req) {
     throw Object.assign(new Error("Expected JSON."), { status: 415 });
   try {
     return JSON.parse(
-      (await readBody(req, 1_000_000)).toString("utf8") || "{}",
+      (await readBody(req, 6_000_000)).toString("utf8") || "{}",
     );
   } catch (error) {
     if (error.status) throw error;
@@ -227,6 +239,14 @@ function sameOrigin(req) {
   } catch {
     return false;
   }
+}
+
+function xml(text) {
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 function etag(buf) {
@@ -326,6 +346,61 @@ async function handle(req, res) {
   const method = req.method;
 
   if (path === "/healthz") return send(res, 200, { ok: true });
+
+  if (
+    (path === "/sitemap.xml" || path === "/blog/rss.xml") &&
+    method === "GET"
+  ) {
+    const site = readJson(paths.published, defaults);
+    const proto = isHttps(req) ? "https" : "http";
+    const origin = `${proto}://${req.headers["x-forwarded-host"] || req.headers.host}`;
+    const posts = site.blog.enabled ? site.posts.filter((p) => p.visible) : [];
+    if (path === "/sitemap.xml") {
+      const urls = [
+        "/",
+        ...site.pages.filter((p) => p.visible).map((p) => `/${p.slug}`),
+        ...(site.blog.enabled ? ["/blog"] : []),
+        ...posts.map((p) => `/blog/${p.slug}`),
+      ];
+      const body = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls
+        .map((u) => `  <url><loc>${xml(origin + u)}</loc></url>`)
+        .join("\n")}\n</urlset>\n`;
+      return send(res, 200, body, {
+        "Content-Type": "application/xml; charset=utf-8",
+        "Cache-Control": "no-cache",
+      });
+    }
+    if (!site.blog.enabled) return send(res, 404, { error: "Not found." });
+    const items = posts
+      .slice(0, 30)
+      .map(
+        (p) => `  <item>
+    <title>${xml(p.title)}</title>
+    <link>${xml(`${origin}/blog/${p.slug}`)}</link>
+    <guid isPermaLink="true">${xml(`${origin}/blog/${p.slug}`)}</guid>
+    <pubDate>${new Date(`${p.date}T09:00:00+10:00`).toUTCString()}</pubDate>
+${p.tags.map((t) => `    <category>${xml(t)}</category>`).join("\n")}
+    <description>${xml(p.excerpt)}</description>
+  </item>`,
+      )
+      .join("\n");
+    const body = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>${xml(`${site.blog.title} | ${site.brand.name}`)}</title>
+  <link>${xml(`${origin}/blog`)}</link>
+  <atom:link href="${xml(`${origin}/blog/rss.xml`)}" rel="self" type="application/rss+xml"/>
+  <description>${xml(site.blog.intro)}</description>
+  <language>en-au</language>
+${items}
+</channel>
+</rss>
+`;
+    return send(res, 200, body, {
+      "Content-Type": "application/rss+xml; charset=utf-8",
+      "Cache-Control": "no-cache",
+    });
+  }
 
   if (path === "/api/content" && (method === "GET" || method === "HEAD")) {
     const buf = readFileSync(paths.published);

@@ -5,6 +5,7 @@ import "@fontsource-variable/space-grotesk";
 import "./styles.css";
 import App from "./App";
 import { ContentContext } from "./editable";
+import { RouterProvider } from "./site";
 import {
   defaultContent,
   loadContent,
@@ -23,6 +24,7 @@ function post(message: object) {
 /** Runs inside the /admin preview frame: the page becomes the editor. */
 function EditBridge() {
   const [content, setContent] = useState<SiteContent | null>(null);
+  const [previewPath, setPreviewPath] = useState("/");
 
   useEffect(() => {
     document.documentElement.classList.add("is-edit-mode");
@@ -31,6 +33,18 @@ function EditBridge() {
         return;
       const { type } = event.data || {};
       if (type === "wtp:content") setContent(event.data.content);
+      if (type === "wtp:scroll-block")
+        setTimeout(
+          () =>
+            document
+              .querySelector(`[data-block-index="${Number(event.data.index)}"]`)
+              ?.scrollIntoView({ behavior: "smooth", block: "start" }),
+          60,
+        );
+      if (type === "wtp:navigate" && typeof event.data.path === "string") {
+        setPreviewPath(event.data.path);
+        window.scrollTo(0, 0);
+      }
       if (type === "wtp:scroll")
         document
           .getElementById(event.data.target)
@@ -68,7 +82,9 @@ function EditBridge() {
         },
       }}
     >
-      <App />
+      <RouterProvider controlledPath={previewPath}>
+        <App />
+      </RouterProvider>
     </ContentContext.Provider>
   );
 }
@@ -90,7 +106,9 @@ if (editMode) {
             onEdit: () => {},
           }}
         >
-          <App />
+          <RouterProvider>
+            <App />
+          </RouterProvider>
         </ContentContext.Provider>
       </React.StrictMode>,
     ),

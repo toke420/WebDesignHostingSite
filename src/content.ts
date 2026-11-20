@@ -32,8 +32,78 @@ export type Project = {
   url: string;
   visible: boolean;
 };
-export type Faq = { question: string; answer: string };
+export type Faq = { id: string; question: string; answer: string };
 type Block = { title: string; body: string };
+
+export type MenuItem = { label: string; href: string };
+type BlockBase = { id: string; anchor: string };
+export type PageBlock = BlockBase &
+  (
+    | {
+        type: "hero";
+        eyebrow: string;
+        heading: string;
+        text: string;
+        buttonLabel: string;
+        buttonLink: string;
+        image: string;
+      }
+    | { type: "heading"; text: string; level: 2 | 3 }
+    | { type: "text"; html: string }
+    | {
+        type: "image";
+        src: string;
+        alt: string;
+        caption: string;
+        wide: boolean;
+      }
+    | {
+        type: "button";
+        label: string;
+        link: string;
+        style: "primary" | "outline";
+      }
+    | {
+        type: "cards";
+        heading: string;
+        items: { title: string; text: string; link: string }[];
+      }
+    | { type: "quote"; text: string; cite: string }
+    | { type: "pricing"; heading: string; service: ServiceId }
+    | { type: "faq"; heading: string; ids: string[] }
+    | {
+        type: "cta";
+        heading: string;
+        text: string;
+        buttonLabel: string;
+        buttonLink: string;
+      }
+    | { type: "posts"; heading: string; count: number; tag: string }
+    | { type: "divider" }
+  );
+export type BlockType = PageBlock["type"];
+export type Page = {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  visible: boolean;
+  blocks: PageBlock[];
+};
+export type Post = {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  author: string;
+  date: string;
+  tags: string[];
+  cover: string;
+  coverAlt: string;
+  body: string;
+  visible: boolean;
+  featured: boolean;
+};
 
 export type SiteContent = {
   version: number;
@@ -83,6 +153,10 @@ export type SiteContent = {
   logoPackage: { price: number | null; title: string; description: string };
   projects: Project[];
   faqs: Faq[];
+  pages: Page[];
+  blog: { title: string; intro: string; enabled: boolean };
+  posts: Post[];
+  menus: { header: MenuItem[]; footer: MenuItem[] };
 };
 
 export const defaultContent = defaults as SiteContent;
@@ -127,6 +201,34 @@ export function setPath<T>(obj: T, path: string, value: unknown): T {
     }
   });
   return root as T;
+}
+
+/** URL-safe version of a name, used for page addresses and link names. */
+export function slugify(text: string) {
+  return text
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60);
+}
+
+/** Anchor for a package, e.g. "plan-hosting-standard". */
+export function planAnchor(serviceId: string, planName: string) {
+  return `plan-${serviceId}-${slugify(planName) || "package"}`;
+}
+
+export function tagSlug(tag: string) {
+  return slugify(tag);
+}
+
+export function formatDate(iso: string) {
+  return new Date(`${iso}T12:00:00`).toLocaleDateString("en-AU", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 }
 
 export function formatPrice(price: number) {

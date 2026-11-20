@@ -14,6 +14,8 @@ export default defineConfig(({ mode }) => {
     "/api/content": { target: content },
     "/api/admin": { target: content },
     "/uploads": { target: content },
+    "/sitemap.xml": { target: content },
+    "/blog/rss.xml": { target: content },
   };
   return {
     plugins: [

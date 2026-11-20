@@ -4,6 +4,9 @@ import {
   ArrowArcRightIcon,
   ArrowSquareOutIcon,
   ClockCounterClockwiseIcon,
+  FilesIcon,
+  NewspaperIcon,
+  ListBulletsIcon,
   CurrencyDollarIcon,
   DesktopIcon,
   DeviceMobileIcon,
@@ -41,9 +44,14 @@ import {
   panelScroll,
   type Selection,
 } from "./panels";
+import { BlogPanel, MenusPanel, PagesPanel } from "./content-panels";
+import { AdminContent } from "./links";
 
 const nav = [
   { id: "home", label: "Start here", icon: HouseIcon },
+  { id: "pages", label: "Pages", icon: FilesIcon },
+  { id: "blog", label: "Blog", icon: NewspaperIcon },
+  { id: "menus", label: "Menus", icon: ListBulletsIcon },
   { id: "packages", label: "Packages & prices", icon: CurrencyDollarIcon },
   { id: "faqs", label: "Questions & answers", icon: QuestionIcon },
   { id: "showcase", label: "Showcase sites", icon: SquaresFourIcon },
@@ -252,10 +260,37 @@ function Editor({ onSignedOut }: { onSignedOut: () => void }) {
       if (s.service === "logo")
         postToFrame({ type: "wtp:service", id: "design" });
       const target = s.group ? groupScroll[s.group] : panelScroll[next];
-      if (target && !s.fromPreview) postToFrame({ type: "wtp:scroll", target });
+      // Let the preview switch pages first, then scroll.
+      if (target && !s.fromPreview)
+        setTimeout(() => postToFrame({ type: "wtp:scroll", target }), 80);
+      if (s.block !== undefined && !s.fromPreview)
+        setTimeout(
+          () => postToFrame({ type: "wtp:scroll-block", index: s.block }),
+          120,
+        );
     },
     [postToFrame],
   );
+
+  // The preview shows whichever page or post is being edited.
+  const previewPath = (() => {
+    if (!content) return "/";
+    if (panel === "pages") {
+      const page = content.pages.find((p) => p.id === selection.pageId);
+      return page ? `/${page.slug}` : "/";
+    }
+    if (panel === "blog") {
+      const post = content.posts.find((p) => p.id === selection.postId);
+      return post ? `/blog/${post.slug}` : "/blog";
+    }
+    return "/";
+  })();
+  const shownPath = useRef("/");
+  useEffect(() => {
+    if (!frameReady.current || shownPath.current === previewPath) return;
+    shownPath.current = previewPath;
+    postToFrame({ type: "wtp:navigate", path: previewPath });
+  }, [previewPath, postToFrame]);
 
   // Messages from the preview: ready, inline edits and clicks on blocks.
   useEffect(() => {
@@ -270,6 +305,8 @@ function Editor({ onSignedOut }: { onSignedOut: () => void }) {
         frameReady.current = true;
         if (latest.current)
           postToFrame({ type: "wtp:content", content: latest.current });
+        shownPath.current = "/";
+        forceRender((n) => n + 1);
       }
       if (data.type === "wtp:edit") update(data.path, data.value);
       if (data.type === "wtp:select") {
@@ -478,47 +515,52 @@ function Editor({ onSignedOut }: { onSignedOut: () => void }) {
         ))}
       </nav>
 
-      <main className="editor-panel">
-        {panel === "home" && <HomePanel {...props} />}
-        {panel === "packages" && <PackagesPanel {...props} />}
-        {panel === "faqs" && <FaqPanel {...props} />}
-        {panel === "showcase" && <ShowcasePanel {...props} />}
-        {panel === "text" && <TextPanel {...props} />}
-        {panel === "brand" && <BrandPanel {...props} />}
-        {panel === "settings" && <SettingsPanel {...props} />}
-        {panel === "history" && (
-          <HistoryPanel
-            onRestore={async (id) => {
-              try {
-                replaceAll(
-                  (await api.restore(id)).content,
-                  "Version restored to your draft. Publish to make it live.",
-                );
-              } catch (err) {
-                handleError(err);
-              }
-            }}
-            onReset={async () => {
-              try {
-                replaceAll(
-                  (await api.resetDefaults()).content,
-                  "Original content restored to your draft.",
-                );
-              } catch (err) {
-                handleError(err);
-              }
-            }}
-          />
-        )}
-        {panel === "account" && (
-          <AccountPanel
-            onLogout={async () => {
-              await api.logout().catch(() => {});
-              onSignedOut();
-            }}
-          />
-        )}
-      </main>
+      <AdminContent.Provider value={content}>
+        <main className="editor-panel">
+          {panel === "home" && <HomePanel {...props} />}
+          {panel === "packages" && <PackagesPanel {...props} />}
+          {panel === "faqs" && <FaqPanel {...props} />}
+          {panel === "showcase" && <ShowcasePanel {...props} />}
+          {panel === "text" && <TextPanel {...props} />}
+          {panel === "brand" && <BrandPanel {...props} />}
+          {panel === "settings" && <SettingsPanel {...props} />}
+          {panel === "history" && (
+            <HistoryPanel
+              onRestore={async (id) => {
+                try {
+                  replaceAll(
+                    (await api.restore(id)).content,
+                    "Version restored to your draft. Publish to make it live.",
+                  );
+                } catch (err) {
+                  handleError(err);
+                }
+              }}
+              onReset={async () => {
+                try {
+                  replaceAll(
+                    (await api.resetDefaults()).content,
+                    "Original content restored to your draft.",
+                  );
+                } catch (err) {
+                  handleError(err);
+                }
+              }}
+            />
+          )}
+          {panel === "pages" && <PagesPanel {...props} />}
+          {panel === "blog" && <BlogPanel {...props} />}
+          {panel === "menus" && <MenusPanel {...props} />}
+          {panel === "account" && (
+            <AccountPanel
+              onLogout={async () => {
+                await api.logout().catch(() => {});
+                onSignedOut();
+              }}
+            />
+          )}
+        </main>
+      </AdminContent.Provider>
 
       <section className="preview" aria-label="Live preview">
         <div className="preview-label">

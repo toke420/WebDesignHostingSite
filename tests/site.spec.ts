@@ -341,3 +341,176 @@ test("example sites open from the showcase and their pages work", async ({
   await site.goto("/examples/store/cart.html");
   await expect(site.locator(".line")).toHaveCount(1);
 });
+
+test("custom pages, blog, menus and deep links work on the public site", async ({
+  page,
+  request,
+}) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto("/");
+  await page
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("link", { name: "Blog" })
+    .click();
+  await expect(page).toHaveURL(/\/blog$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Notes & guides",
+  );
+  await page.getByRole("link", { name: "Guides", exact: true }).click();
+  await expect(page).toHaveURL(/tag=guides/);
+  await page
+    .getByRole("link", { name: /How to choose web hosting/ })
+    .first()
+    .click();
+  await expect(page).toHaveTitle(/How to choose web hosting/);
+
+  // A link to a specific question opens it on the home page.
+  await page
+    .getByRole("link", { name: "Melbourne and Sydney, with US and UK options" })
+    .click();
+  await expect(page).toHaveURL(/#faq-hosting-location$/);
+  await expect(page.locator("#faq-hosting-location")).toHaveAttribute(
+    "open",
+    "",
+  );
+  await page.goBack();
+  await expect(page).toHaveTitle(/How to choose web hosting/);
+
+  // A link to a specific package switches to the right tab.
+  await page.goto("/#plan-email-pro-email");
+  await expect(page.getByRole("tab", { name: "Hosted email" })).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
+  await expect(page.locator("#plan-email-pro-email")).toBeInViewport();
+
+  // A link can highlight exact text.
+  await page.goto("/?hl=Virtualmin%20Pro%20on%20LEMP#about");
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        CSS.highlights.get("wtp-target")?.values().next().value?.toString(),
+      ),
+    )
+    .toBe("Virtualmin Pro on LEMP");
+
+  // A page built from blocks, with live prices.
+  await page.goto("/web-hosting#plans");
+  await expect(page).toHaveTitle("Australian web hosting | WebTechPros");
+  await expect(page.locator("#plans .price-amount").first()).toHaveText(
+    "$10/ month",
+  );
+  await page.goto("/no-such-page");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    "That page has moved on.",
+  );
+
+  const sitemap = await (await request.get("/sitemap.xml")).text();
+  expect(sitemap).toContain("/web-hosting</loc>");
+  expect(sitemap).toContain("/blog/how-to-choose-web-hosting</loc>");
+  const rss = await request.get("/blog/rss.xml");
+  expect(rss.headers()["content-type"]).toContain("application/rss+xml");
+  expect(await rss.text()).toContain(
+    "<title>How to choose web hosting for a small business</title>",
+  );
+  expect(errors).toEqual([]);
+});
+
+test("admin: build a page with blocks and links, write a post, and publish", async ({
+  page,
+  context,
+}) => {
+  await page.goto("/admin/");
+  await page.getByLabel("Password").fill("test-admin-password");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  const preview = page.frameLocator("iframe");
+
+  await page.getByRole("button", { name: "Pages", exact: true }).click();
+  await page.getByRole("button", { name: "Add a page" }).click();
+  await page.getByRole("button", { name: /Service page/ }).click();
+  await page
+    .getByRole("textbox", { name: /^Page title/ })
+    .fill("Business email");
+  await page.getByRole("button", { name: "Use title" }).click();
+  await expect(page.getByRole("textbox", { name: "Web address" })).toHaveValue(
+    "business-email",
+  );
+  await expect(preview.locator(".custom-page .block-hero h1")).toBeVisible();
+
+  // Edit the hero right in the preview.
+  const heading = preview.locator(
+    '[data-edit-path="pages.1.blocks.0.heading"]',
+  );
+  await heading.click();
+  await page.keyboard.press("ControlOrMeta+A");
+  await page.keyboard.type("Email your customers trust.");
+  await page.keyboard.press("Tab");
+
+  // Add a text block whose link points at a specific question and highlights text.
+  await page.getByRole("button", { name: "Add a block" }).last().click();
+  await page.getByRole("menuitem", { name: /^Text/ }).click();
+  const editor = page.locator(".block-card.is-open .rich-body");
+  await editor.click();
+  await page.keyboard.press("ControlOrMeta+A");
+  await page.keyboard.type("Where we host");
+  await page.keyboard.press("ControlOrMeta+A");
+  await page
+    .locator(".block-card.is-open")
+    .getByRole("button", { name: "Add link" })
+    .click();
+  const picker = page.getByRole("dialog", { name: "Link the selected text" });
+  await picker.getByLabel("Search link targets").fill("hosted");
+  await picker
+    .getByRole("option", { name: /Where will my website be hosted/ })
+    .click();
+  await picker
+    .getByLabel("Highlight exact text (optional)")
+    .fill("Melbourne and Sydney");
+  await picker.getByRole("button", { name: "Use this link" }).click();
+  await expect(editor.locator("a")).toHaveAttribute(
+    "href",
+    "/?hl=Melbourne+and+Sydney#faq-hosting-location",
+  );
+  await page.getByRole("textbox", { name: /^Link name/ }).fill("hosting-note");
+  await page.getByRole("switch").first().check();
+  await page.getByRole("button", { name: "Add to top menu" }).click();
+
+  // Write and show a blog post.
+  await page.getByRole("button", { name: "Blog", exact: true }).click();
+  await page.getByRole("button", { name: "Write a new post" }).click();
+  await page
+    .getByRole("textbox", { name: /^Title/ })
+    .fill("Moving your business email");
+  await page.getByRole("button", { name: "Use title" }).click();
+  await page.getByRole("textbox", { name: /^Topics/ }).fill("Email, Guides");
+  await page.getByRole("switch").first().check();
+  await expect(preview.locator(".post-head h1")).toHaveText(
+    "Moving your business email",
+  );
+
+  await expect(page.locator(".status-saved")).toBeVisible({ timeout: 5000 });
+  await page.getByRole("button", { name: "Publish changes" }).click();
+  await expect(
+    page.getByText("Published! Your changes are now live."),
+  ).toBeVisible();
+
+  const live = await context.newPage();
+  await live.goto("/");
+  await live
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("link", { name: "Business email" })
+    .click();
+  await expect(live.locator(".block-hero h1")).toHaveText(
+    "Email your customers trust.",
+  );
+  await live.locator("#hosting-note a").click();
+  await expect(live.locator("#faq-hosting-location")).toHaveAttribute(
+    "open",
+    "",
+  );
+  await live.goto("/blog/moving-your-business-email");
+  await expect(live.getByRole("heading", { level: 1 })).toHaveText(
+    "Moving your business email",
+  );
+});

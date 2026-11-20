@@ -27,6 +27,14 @@ import {
   type ServiceId,
 } from "./content";
 import { T, useSite } from "./editable";
+import {
+  ActionsContext,
+  PlanGrid,
+  selectAttr,
+  useDeepLinks,
+  useRouter,
+} from "./site";
+import { FaqItem, RouteView } from "./pages";
 import { submitConsultation, openChat } from "./helpdesk";
 
 const serviceIcons = {
@@ -39,14 +47,9 @@ const serviceIcons = {
 const benefitIcons = [LightningIcon, ShieldCheckIcon, ChatCircleDotsIcon];
 type Consultation = { service: string; detail: string };
 
-/** Tells the admin editor which panel matches what was clicked in the preview. */
-function selectAttr(value: object) {
-  return { "data-select": JSON.stringify(value) };
-}
-
 function Wordmark() {
   return (
-    <a className="wordmark" href="#home" aria-label="WebTechPros home">
+    <a className="wordmark" href="/" aria-label="WebTechPros home">
       <span className="brand-mark" aria-hidden="true">
         w<span>.</span>
       </span>
@@ -94,13 +97,38 @@ export default function App() {
     }
   };
 
+  const { route, path } = useRouter();
+  useDeepLinks(setActiveService);
   useEffect(() => {
     if (editing) return;
-    document.title = content.seo.title;
+    const titles = {
+      home: [content.seo.title, content.seo.description],
+      page:
+        route.kind === "page"
+          ? [
+              `${route.page.title} | ${brand.name}`,
+              route.page.description || content.seo.description,
+            ]
+          : [],
+      post:
+        route.kind === "post"
+          ? [
+              `${route.post.title} | ${brand.name}`,
+              route.post.excerpt || content.seo.description,
+            ]
+          : [],
+      blog: [
+        `${content.blog.title} | ${brand.name}`,
+        content.blog.intro || content.seo.description,
+      ],
+      notfound: [`Page not found | ${brand.name}`, content.seo.description],
+    }[route.kind];
+    document.title = titles[0];
     document
       .querySelector('meta[name="description"]')
-      ?.setAttribute("content", content.seo.description);
-  }, [content.seo, editing]);
+      ?.setAttribute("content", titles[1]);
+    setMobileMenu(false);
+  }, [route, content.seo, content.blog, brand.name, editing]);
 
   useEffect(() => {
     if (!editing) return;
@@ -125,13 +153,13 @@ export default function App() {
     );
     document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, []);
+  }, [route.kind, path]);
 
   const announcement = settings.announcement;
   const ProjectTag = editing ? "div" : "button";
 
   return (
-    <>
+    <ActionsContext.Provider value={{ consult }}>
       <a className="skip-link" href="#main">
         Skip to content
       </a>
@@ -156,18 +184,21 @@ export default function App() {
             className={mobileMenu ? "main-nav is-open" : "main-nav"}
             aria-label="Main navigation"
           >
-            <a href="#services" onClick={() => setMobileMenu(false)}>
-              Our services
-            </a>
-            <a href="#projects" onClick={() => setMobileMenu(false)}>
-              What we build
-            </a>
-            <a href="#about" onClick={() => setMobileMenu(false)}>
-              Why WebTechPros
-            </a>
-            <a href="#faq" onClick={() => setMobileMenu(false)}>
-              FAQs
-            </a>
+            {content.menus.header.map((item, i) => (
+              <a
+                key={i}
+                href={item.href}
+                onClick={() => setMobileMenu(false)}
+                aria-current={
+                  item.href === path ||
+                  (item.href !== "/" && path.startsWith(item.href + "/"))
+                    ? "page"
+                    : undefined
+                }
+              >
+                {item.label}
+              </a>
+            ))}
           </nav>
           <button
             className="button button-yellow nav-cta"
@@ -195,487 +226,404 @@ export default function App() {
       </header>
 
       <main id="main">
-        <section
-          className="hero container"
-          id="home"
-          aria-labelledby="hero-title"
-          {...selectAttr({ panel: "text", group: "brand" })}
-        >
-          <div className="hero-copy">
-            <p className="eyebrow">
-              <span className="eyebrow-line" /> <T path="brand.eyebrow" />
-            </p>
-            <h1 id="hero-title">
-              <T as="span" className="hero-line" path="brand.headline.0" />
-              <br />
-              <T as="span" className="hero-accent" path="brand.headline.1" />
-            </h1>
-            <T as="p" className="hero-intro" path="brand.intro" multiline />
-            <div className="hero-actions">
-              <button
-                className="button button-yellow"
-                onClick={() => consult()}
-              >
-                Free consultation <ArrowUpRightIcon size={20} />
-              </button>
-              <a className="text-link" href="#services">
-                Explore services <ArrowRightIcon size={18} />
-              </a>
-            </div>
-          </div>
-          <div className="hero-art">
-            <img
-              src="/images/hero-sculpture.webp"
-              alt="Sculptural yellow ribbons connected into a bold geometric form"
-              fetchPriority="high"
-              width="1448"
-              height="1086"
-            />
-            <div className="art-corner top" aria-hidden="true" />
-            <div className="art-corner bottom" aria-hidden="true" />
-          </div>
-        </section>
-
-        <div className="container service-rail" aria-label="Our capabilities">
-          {[...services]
-            .sort(
-              (a, b) => serviceOrder.indexOf(a.id) - serviceOrder.indexOf(b.id),
-            )
-            .map((s) => {
-              const Icon = serviceIcons[s.id];
-              return (
-                <a
-                  key={s.id}
-                  href="#services"
-                  onClick={() => setActiveService(s.id)}
-                >
-                  <Icon size={22} weight="light" />
-                  <span>{s.title}</span>
-                  <ArrowUpRightIcon className="rail-arrow" size={15} />
-                </a>
-              );
-            })}
-        </div>
-
-        <section
-          className="section container services-section reveal"
-          id="services"
-          aria-labelledby="services-heading"
-        >
-          <div
-            className="section-title-row"
-            {...selectAttr({ panel: "text", group: "services" })}
-          >
-            <div>
-              <T
-                as="p"
-                className="section-kicker"
-                path="sections.services.kicker"
-              />
-              <h2 id="services-heading">
-                <T path="sections.services.heading" />{" "}
-                <T className="muted" path="sections.services.headingMuted" />
-              </h2>
-            </div>
-            <T className="small-note" path="sections.services.aside" />
-          </div>
-          <div
-            className="service-tabs"
-            role="tablist"
-            aria-label="Service packages"
-          >
-            {services.map((s, index) => {
-              const Icon = serviceIcons[s.id];
-              return (
-                <button
-                  id={`tab-${s.id}`}
-                  key={s.id}
-                  role="tab"
-                  aria-selected={activeService === s.id}
-                  aria-controls={`panel-${s.id}`}
-                  tabIndex={activeService === s.id ? 0 : -1}
-                  onClick={() => setActiveService(s.id)}
-                  {...selectAttr({ panel: "packages", service: s.id })}
-                  onKeyDown={(e) => {
-                    let next = index;
-                    if (e.key === "ArrowRight")
-                      next = (index + 1) % services.length;
-                    else if (e.key === "ArrowLeft")
-                      next = (index + services.length - 1) % services.length;
-                    else if (e.key === "Home") next = 0;
-                    else if (e.key === "End") next = services.length - 1;
-                    else return;
-                    e.preventDefault();
-                    setActiveService(services[next].id);
-                    document
-                      .getElementById(`tab-${services[next].id}`)
-                      ?.focus();
-                  }}
-                >
-                  <Icon size={19} />
-                  {s.title}
-                </button>
-              );
-            })}
-          </div>
-          <div
-            role="tabpanel"
-            id={`panel-${service.id}`}
-            aria-labelledby={`tab-${service.id}`}
-            className="service-panel"
-            key={service.id}
-          >
-            <div
-              className="service-panel-heading"
-              {...selectAttr({ panel: "packages", service: service.id })}
+        {route.kind !== "home" ? (
+          <RouteView route={route} />
+        ) : (
+          <>
+            <section
+              className="hero container"
+              id="home"
+              aria-labelledby="hero-title"
+              {...selectAttr({ panel: "text", group: "brand" })}
             >
-              <T as="h3" path={`services.${serviceIndex}.heading`} />
+              <div className="hero-copy">
+                <p className="eyebrow">
+                  <span className="eyebrow-line" /> <T path="brand.eyebrow" />
+                </p>
+                <h1 id="hero-title">
+                  <T as="span" className="hero-line" path="brand.headline.0" />
+                  <br />
+                  <T
+                    as="span"
+                    className="hero-accent"
+                    path="brand.headline.1"
+                  />
+                </h1>
+                <T as="p" className="hero-intro" path="brand.intro" multiline />
+                <div className="hero-actions">
+                  <button
+                    className="button button-yellow"
+                    onClick={() => consult()}
+                  >
+                    Free consultation <ArrowUpRightIcon size={20} />
+                  </button>
+                  <a className="text-link" href="#services">
+                    Explore services <ArrowRightIcon size={18} />
+                  </a>
+                </div>
+              </div>
+              <div className="hero-art">
+                <img
+                  src="/images/hero-sculpture.webp"
+                  alt="Sculptural yellow ribbons connected into a bold geometric form"
+                  fetchPriority="high"
+                  width="1448"
+                  height="1086"
+                />
+                <div className="art-corner top" aria-hidden="true" />
+                <div className="art-corner bottom" aria-hidden="true" />
+              </div>
+            </section>
+
+            <div
+              className="container service-rail"
+              aria-label="Our capabilities"
+            >
+              {[...services]
+                .sort(
+                  (a, b) =>
+                    serviceOrder.indexOf(a.id) - serviceOrder.indexOf(b.id),
+                )
+                .map((s) => {
+                  const Icon = serviceIcons[s.id];
+                  return (
+                    <a
+                      key={s.id}
+                      href="#services"
+                      onClick={() => setActiveService(s.id)}
+                    >
+                      <Icon size={22} weight="light" />
+                      <span>{s.title}</span>
+                      <ArrowUpRightIcon className="rail-arrow" size={15} />
+                    </a>
+                  );
+                })}
+            </div>
+
+            <section
+              className="section container services-section reveal"
+              id="services"
+              aria-labelledby="services-heading"
+            >
+              <div
+                className="section-title-row"
+                {...selectAttr({ panel: "text", group: "services" })}
+              >
+                <div>
+                  <T
+                    as="p"
+                    className="section-kicker"
+                    path="sections.services.kicker"
+                  />
+                  <h2 id="services-heading">
+                    <T path="sections.services.heading" />{" "}
+                    <T
+                      className="muted"
+                      path="sections.services.headingMuted"
+                    />
+                  </h2>
+                </div>
+                <T className="small-note" path="sections.services.aside" />
+              </div>
+              <div
+                className="service-tabs"
+                role="tablist"
+                aria-label="Service packages"
+              >
+                {services.map((s, index) => {
+                  const Icon = serviceIcons[s.id];
+                  return (
+                    <button
+                      id={`tab-${s.id}`}
+                      key={s.id}
+                      role="tab"
+                      aria-selected={activeService === s.id}
+                      aria-controls={`panel-${s.id}`}
+                      tabIndex={activeService === s.id ? 0 : -1}
+                      onClick={() => setActiveService(s.id)}
+                      {...selectAttr({ panel: "packages", service: s.id })}
+                      onKeyDown={(e) => {
+                        let next = index;
+                        if (e.key === "ArrowRight")
+                          next = (index + 1) % services.length;
+                        else if (e.key === "ArrowLeft")
+                          next =
+                            (index + services.length - 1) % services.length;
+                        else if (e.key === "Home") next = 0;
+                        else if (e.key === "End") next = services.length - 1;
+                        else return;
+                        e.preventDefault();
+                        setActiveService(services[next].id);
+                        document
+                          .getElementById(`tab-${services[next].id}`)
+                          ?.focus();
+                      }}
+                    >
+                      <Icon size={19} />
+                      {s.title}
+                    </button>
+                  );
+                })}
+              </div>
+              <div
+                role="tabpanel"
+                id={`panel-${service.id}`}
+                aria-labelledby={`tab-${service.id}`}
+                className="service-panel"
+                key={service.id}
+              >
+                <div
+                  className="service-panel-heading"
+                  {...selectAttr({ panel: "packages", service: service.id })}
+                >
+                  <T as="h3" path={`services.${serviceIndex}.heading`} />
+                  <T
+                    as="p"
+                    path={`services.${serviceIndex}.description`}
+                    multiline
+                  />
+                </div>
+                <PlanGrid serviceIndex={serviceIndex} />
+                {service.id === "design" && (
+                  <div
+                    className="logo-offer"
+                    {...selectAttr({ panel: "packages", service: "logo" })}
+                  >
+                    <PaletteIcon size={40} weight="light" />
+                    <div>
+                      <T as="h4" path="logoPackage.title" />
+                      <T as="p" path="logoPackage.description" multiline />
+                    </div>
+                    <button
+                      onClick={() =>
+                        consult(
+                          "Logo design",
+                          "I'm interested in a custom logo pack.",
+                        )
+                      }
+                      className="text-link"
+                    >
+                      {logoPackage.price === null
+                        ? "Request a quote"
+                        : `From $${formatPrice(logoPackage.price)} AUD`}{" "}
+                      <ArrowUpRightIcon size={19} />
+                    </button>
+                  </div>
+                )}
+                <T
+                  as="p"
+                  className="pricing-note"
+                  path={`services.${serviceIndex}.note`}
+                  multiline
+                />
+              </div>
+            </section>
+
+            <section
+              className="section projects-section container reveal"
+              id="projects"
+              aria-labelledby="projects-heading"
+            >
+              <div
+                className="section-title-row"
+                {...selectAttr({ panel: "text", group: "projects" })}
+              >
+                <h2 id="projects-heading">
+                  <T path="sections.projects.heading" />
+                  <br />
+                  <T className="muted" path="sections.projects.headingMuted" />
+                </h2>
+                <a
+                  className="text-link"
+                  href="#services"
+                  onClick={() => setActiveService("design")}
+                >
+                  Explore web design <ArrowUpRightIcon size={18} />
+                </a>
+              </div>
               <T
                 as="p"
-                path={`services.${serviceIndex}.description`}
+                className="section-intro"
+                path="sections.projects.intro"
                 multiline
               />
-            </div>
-            <div className={`pricing-grid plans-${service.plans.length}`}>
-              {service.plans.map((plan, planIndex) => {
-                const base = `services.${serviceIndex}.plans.${planIndex}`;
-                return (
-                  <article
-                    key={planIndex}
-                    className={`plan ${plan.featured ? "plan-featured" : ""}`}
-                    {...selectAttr({
-                      panel: "packages",
-                      service: service.id,
-                      plan: planIndex,
-                    })}
-                  >
-                    <div className="plan-label">
-                      {plan.featured ? (
-                        <>
-                          <span className="plan-label-mark">↗</span>{" "}
-                          <T path={`${base}.label`} />
-                        </>
-                      ) : (
-                        <span aria-hidden="true">&nbsp;</span>
-                      )}
-                    </div>
-                    <div className="plan-inner">
-                      <T as="h4" path={`${base}.name`} />
-                      <T
-                        as="p"
-                        className="plan-description"
-                        path={`${base}.description`}
-                      />
-                      <div
-                        className={`price ${plan.price === null && !editing ? "price-quote" : ""}`}
-                      >
-                        {plan.price === null && !editing ? (
-                          <span>Let’s talk.</span>
-                        ) : (
-                          <>
-                            <span className="price-from">
-                              {["hosting", "design", "support"].includes(
-                                service.id,
-                              )
-                                ? "FROM"
-                                : "AUD"}
-                            </span>
-                            <span className="price-amount">
-                              <span className="currency">$</span>
-                              {editing ? (
-                                <T
-                                  path={`${base}.price`}
-                                  number
-                                  label={`${plan.name} price (leave empty for quote only)`}
-                                />
-                              ) : (
-                                formatPrice(plan.price!)
-                              )}
-                              <T as="small" path={`${base}.unit`} />
-                            </span>
-                          </>
-                        )}
+              <div className="project-grid">
+                {visibleProjects.map((p, index) => {
+                  const i = projects.indexOf(p);
+                  return (
+                    <ProjectTag
+                      key={p.id}
+                      className={`project project-${p.id}`}
+                      onClick={editing ? undefined : () => setProject(p)}
+                      aria-label={
+                        editing ? undefined : `View ${p.type} example`
+                      }
+                      {...selectAttr({ panel: "showcase", project: i })}
+                    >
+                      <div className="project-image">
+                        <img
+                          src={p.image}
+                          alt={`${p.type} concept preview`}
+                          loading="lazy"
+                          width="1200"
+                          height="800"
+                        />
                       </div>
-                      <ul className="plan-features">
-                        {plan.features.map((_, i) => (
-                          <li key={i}>
-                            <CheckIcon size={16} weight="bold" />
-                            <T path={`${base}.features.${i}`} />
-                          </li>
-                        ))}
-                      </ul>
-                      <button
-                        className={`button ${plan.featured ? "button-yellow" : "button-outline"}`}
-                        onClick={() =>
-                          consult(
-                            service.title,
-                            `I'm interested in ${plan.name}.`,
-                          )
-                        }
-                      >
-                        {plan.price === null
-                          ? "Request a quote"
-                          : `Enquire about ${plan.name.replace(" Email", "")}`}
-                        <ArrowUpRightIcon size={18} />
-                      </button>
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-            {service.id === "design" && (
-              <div
-                className="logo-offer"
-                {...selectAttr({ panel: "packages", service: "logo" })}
-              >
-                <PaletteIcon size={40} weight="light" />
-                <div>
-                  <T as="h4" path="logoPackage.title" />
-                  <T as="p" path="logoPackage.description" multiline />
-                </div>
-                <button
-                  onClick={() =>
-                    consult(
-                      "Logo design",
-                      "I'm interested in a custom logo pack.",
-                    )
-                  }
-                  className="text-link"
-                >
-                  {logoPackage.price === null
-                    ? "Request a quote"
-                    : `From $${formatPrice(logoPackage.price)} AUD`}{" "}
-                  <ArrowUpRightIcon size={19} />
-                </button>
+                      <div className="project-caption">
+                        <div>
+                          <span className="project-type">
+                            <T path={`projects.${i}.type`} />{" "}
+                            <span className="example-label">
+                              / Concept {String(index + 1).padStart(2, "0")}
+                            </span>
+                          </span>
+                          <T as="h3" path={`projects.${i}.name`} />
+                        </div>
+                        <span className="project-arrow">
+                          <ArrowUpRightIcon size={22} />
+                        </span>
+                      </div>
+                    </ProjectTag>
+                  );
+                })}
               </div>
-            )}
-            <T
-              as="p"
-              className="pricing-note"
-              path={`services.${serviceIndex}.note`}
-              multiline
-            />
-          </div>
-        </section>
+              <T
+                as="p"
+                className="small-note project-disclaimer"
+                path="sections.projects.disclaimer"
+                multiline
+              />
+            </section>
 
-        <section
-          className="section projects-section container reveal"
-          id="projects"
-          aria-labelledby="projects-heading"
-        >
-          <div
-            className="section-title-row"
-            {...selectAttr({ panel: "text", group: "projects" })}
-          >
-            <h2 id="projects-heading">
-              <T path="sections.projects.heading" />
-              <br />
-              <T className="muted" path="sections.projects.headingMuted" />
-            </h2>
-            <a
-              className="text-link"
-              href="#services"
-              onClick={() => setActiveService("design")}
+            <section
+              className="section infrastructure-section container reveal"
+              id="about"
+              aria-labelledby="about-heading"
+              {...selectAttr({ panel: "text", group: "about" })}
             >
-              Explore web design <ArrowUpRightIcon size={18} />
-            </a>
-          </div>
-          <T
-            as="p"
-            className="section-intro"
-            path="sections.projects.intro"
-            multiline
-          />
-          <div className="project-grid">
-            {visibleProjects.map((p, index) => {
-              const i = projects.indexOf(p);
-              return (
-                <ProjectTag
-                  key={p.id}
-                  className={`project project-${p.id}`}
-                  onClick={editing ? undefined : () => setProject(p)}
-                  aria-label={editing ? undefined : `View ${p.type} example`}
-                  {...selectAttr({ panel: "showcase", project: i })}
-                >
-                  <div className="project-image">
-                    <img
-                      src={p.image}
-                      alt={`${p.type} concept preview`}
-                      loading="lazy"
-                      width="1200"
-                      height="800"
+              <div className="infrastructure-visual">
+                <GlobeHemisphereEastIcon size={230} weight="thin" />
+                <div className="location-grid">
+                  {sections.about.locations.map((_, i) => (
+                    <span key={i}>
+                      <span className="location-line" />
+                      <T path={`sections.about.locations.${i}`} />
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div className="infrastructure-copy">
+                <T as="p" className="eyebrow" path="sections.about.eyebrow" />
+                <h2 id="about-heading">
+                  <T path="sections.about.heading" />
+                  <br />
+                  <T className="muted" path="sections.about.headingMuted" />
+                </h2>
+                <T as="p" path="sections.about.body" multiline />
+                <div className="benefits">
+                  {sections.about.benefits.map((_, i) => {
+                    const Icon = benefitIcons[i] || LightningIcon;
+                    return (
+                      <div key={i}>
+                        <Icon size={23} />
+                        <div>
+                          <T
+                            as="h3"
+                            path={`sections.about.benefits.${i}.title`}
+                          />
+                          <T
+                            as="p"
+                            path={`sections.about.benefits.${i}.body`}
+                            multiline
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
+
+            <section
+              className="section process-section container reveal"
+              id="process"
+              aria-labelledby="process-heading"
+              {...selectAttr({ panel: "text", group: "process" })}
+            >
+              <h2 id="process-heading">
+                <T path="sections.process.heading" />{" "}
+                <T className="muted" path="sections.process.headingMuted" />
+              </h2>
+              <div className="process-grid">
+                {sections.process.steps.map((_, i) => (
+                  <div key={i}>
+                    <span className="process-number">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <T as="h3" path={`sections.process.steps.${i}.title`} />
+                    <T
+                      as="p"
+                      path={`sections.process.steps.${i}.body`}
+                      multiline
                     />
                   </div>
-                  <div className="project-caption">
-                    <div>
-                      <span className="project-type">
-                        <T path={`projects.${i}.type`} />{" "}
-                        <span className="example-label">
-                          / Concept {String(index + 1).padStart(2, "0")}
-                        </span>
-                      </span>
-                      <T as="h3" path={`projects.${i}.name`} />
-                    </div>
-                    <span className="project-arrow">
-                      <ArrowUpRightIcon size={22} />
-                    </span>
-                  </div>
-                </ProjectTag>
-              );
-            })}
-          </div>
-          <T
-            as="p"
-            className="small-note project-disclaimer"
-            path="sections.projects.disclaimer"
-            multiline
-          />
-        </section>
-
-        <section
-          className="section infrastructure-section container reveal"
-          id="about"
-          aria-labelledby="about-heading"
-          {...selectAttr({ panel: "text", group: "about" })}
-        >
-          <div className="infrastructure-visual">
-            <GlobeHemisphereEastIcon size={230} weight="thin" />
-            <div className="location-grid">
-              {sections.about.locations.map((_, i) => (
-                <span key={i}>
-                  <span className="location-line" />
-                  <T path={`sections.about.locations.${i}`} />
-                </span>
-              ))}
-            </div>
-          </div>
-          <div className="infrastructure-copy">
-            <T as="p" className="eyebrow" path="sections.about.eyebrow" />
-            <h2 id="about-heading">
-              <T path="sections.about.heading" />
-              <br />
-              <T className="muted" path="sections.about.headingMuted" />
-            </h2>
-            <T as="p" path="sections.about.body" multiline />
-            <div className="benefits">
-              {sections.about.benefits.map((_, i) => {
-                const Icon = benefitIcons[i] || LightningIcon;
-                return (
-                  <div key={i}>
-                    <Icon size={23} />
-                    <div>
-                      <T as="h3" path={`sections.about.benefits.${i}.title`} />
-                      <T
-                        as="p"
-                        path={`sections.about.benefits.${i}.body`}
-                        multiline
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        <section
-          className="section process-section container reveal"
-          id="process"
-          aria-labelledby="process-heading"
-          {...selectAttr({ panel: "text", group: "process" })}
-        >
-          <h2 id="process-heading">
-            <T path="sections.process.heading" />{" "}
-            <T className="muted" path="sections.process.headingMuted" />
-          </h2>
-          <div className="process-grid">
-            {sections.process.steps.map((_, i) => (
-              <div key={i}>
-                <span className="process-number">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <T as="h3" path={`sections.process.steps.${i}.title`} />
-                <T as="p" path={`sections.process.steps.${i}.body`} multiline />
+                ))}
               </div>
-            ))}
-          </div>
-        </section>
+            </section>
 
-        <section
-          className="section faq-section container reveal"
-          id="faq"
-          aria-labelledby="faq-heading"
-        >
-          <div
-            className="faq-intro"
-            {...selectAttr({ panel: "text", group: "faq" })}
-          >
-            <h2 id="faq-heading">
-              <T path="sections.faq.heading" />
-              <br />
-              <T className="muted" path="sections.faq.headingMuted" />
-            </h2>
-            <T as="p" path="sections.faq.intro" multiline />
-            <button className="text-link" onClick={() => consult()}>
-              Free consultation <ArrowUpRightIcon size={19} />
-            </button>
-          </div>
-          <div className="faq-list">
-            {faqs.map((_, i) =>
-              editing ? (
-                <div
-                  key={i}
-                  className="faq-edit"
-                  {...selectAttr({ panel: "faqs", faq: i })}
-                >
-                  <T as="div" className="faq-q" path={`faqs.${i}.question`} />
-                  <T
-                    as="div"
-                    className="faq-a"
-                    path={`faqs.${i}.answer`}
-                    rich
-                  />
+            <section
+              className="section faq-section container reveal"
+              id="faq"
+              aria-labelledby="faq-heading"
+            >
+              <div
+                className="faq-intro"
+                {...selectAttr({ panel: "text", group: "faq" })}
+              >
+                <h2 id="faq-heading">
+                  <T path="sections.faq.heading" />
+                  <br />
+                  <T className="muted" path="sections.faq.headingMuted" />
+                </h2>
+                <T as="p" path="sections.faq.intro" multiline />
+                <button className="text-link" onClick={() => consult()}>
+                  Free consultation <ArrowUpRightIcon size={19} />
+                </button>
+              </div>
+              <div className="faq-list">
+                {faqs.map((faq, i) => (
+                  <FaqItem key={faq.id} id={faq.id} index={i} />
+                ))}
+              </div>
+            </section>
+
+            <section
+              className="consultation-section container reveal"
+              id="contact"
+              {...selectAttr({ panel: "text", group: "cta" })}
+            >
+              <div className="consultation-box">
+                <span className="consultation-icon" aria-hidden="true">
+                  <ArrowUpRightIcon size={82} weight="light" />
+                </span>
+                <div>
+                  <p className="consultation-label">
+                    <ClockIcon size={17} /> <T path="sections.cta.label" />
+                  </p>
+                  <T as="h2" path="sections.cta.heading" multiline />
+                  <T as="p" path="sections.cta.body" multiline />
+                  <button
+                    className="button button-dark"
+                    onClick={() => consult()}
+                  >
+                    <T path="sections.cta.button" />{" "}
+                    <ArrowUpRightIcon size={20} />
+                  </button>
                 </div>
-              ) : (
-                <details key={i}>
-                  <summary>
-                    {faqs[i].question}
-                    <PlusIcon className="faq-plus" size={20} />
-                    <MinusIcon className="faq-minus" size={20} />
-                  </summary>
-                  <T
-                    as="div"
-                    className="faq-a"
-                    path={`faqs.${i}.answer`}
-                    rich
-                  />
-                </details>
-              ),
-            )}
-          </div>
-        </section>
-
-        <section
-          className="consultation-section container reveal"
-          id="contact"
-          {...selectAttr({ panel: "text", group: "cta" })}
-        >
-          <div className="consultation-box">
-            <span className="consultation-icon" aria-hidden="true">
-              <ArrowUpRightIcon size={82} weight="light" />
-            </span>
-            <div>
-              <p className="consultation-label">
-                <ClockIcon size={17} /> <T path="sections.cta.label" />
-              </p>
-              <T as="h2" path="sections.cta.heading" multiline />
-              <T as="p" path="sections.cta.body" multiline />
-              <button className="button button-dark" onClick={() => consult()}>
-                <T path="sections.cta.button" /> <ArrowUpRightIcon size={20} />
-              </button>
-            </div>
-          </div>
-        </section>
+              </div>
+            </section>
+          </>
+        )}
       </main>
 
       <footer
@@ -700,8 +648,11 @@ export default function App() {
             )}
           </div>
           <div className="footer-links">
-            <a href="#services">Our services</a>
-            <a href="#projects">What we build</a>
+            {content.menus.footer.map((item, i) => (
+              <a key={i} href={item.href}>
+                {item.label}
+              </a>
+            ))}
             <button onClick={() => consult()}>
               Free consultation <ArrowUpRightIcon size={16} />
             </button>
@@ -813,7 +764,7 @@ export default function App() {
           </p>
         </Modal>
       )}
-    </>
+    </ActionsContext.Provider>
   );
 }
 

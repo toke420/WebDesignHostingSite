@@ -14,8 +14,14 @@ import {
   UploadSimpleIcon,
   EraserIcon,
   ImagesIcon,
+  ImageIcon,
+  LinkBreakIcon,
+  MinusIcon,
+  QuotesIcon,
+  TextTIcon,
 } from "@phosphor-icons/react";
 import { api } from "./api";
+import { LinkPicker } from "./links";
 
 export function Field({
   label,
@@ -313,23 +319,67 @@ export function RichText({
   label,
   value,
   onChange,
+  full = false,
 }: {
   label: string;
   value: string;
   onChange: (html: string) => void;
+  /** Adds headings, quotes, images and dividers (pages and blog posts). */
+  full?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const saved = useRef<Range | null>(null);
+  const [linking, setLinking] = useState(false);
+  const [uploading, setUploading] = useState(false);
   useEffect(() => {
     const el = ref.current!;
     if (document.activeElement !== el && el.innerHTML !== value)
       el.innerHTML = value;
   }, [value]);
+  const restore = () => {
+    ref.current?.focus();
+    const sel = window.getSelection();
+    if (saved.current && sel) {
+      sel.removeAllRanges();
+      sel.addRange(saved.current);
+    }
+  };
   const exec = (command: string, arg?: string) => {
     ref.current?.focus();
     document.execCommand(command, false, arg);
     onChange(ref.current!.innerHTML);
   };
+  const remember = () => {
+    const sel = window.getSelection();
+    saved.current =
+      sel && sel.rangeCount && ref.current?.contains(sel.anchorNode)
+        ? sel.getRangeAt(0).cloneRange()
+        : null;
+  };
   const tools: [string, ReactNode, () => void][] = [
+    ...(full
+      ? ([
+          [
+            "Large heading",
+            <span key="h2" className="tool-text">
+              H2
+            </span>,
+            () => exec("formatBlock", "<h2>"),
+          ],
+          [
+            "Small heading",
+            <span key="h3" className="tool-text">
+              H3
+            </span>,
+            () => exec("formatBlock", "<h3>"),
+          ],
+          [
+            "Normal text",
+            <TextTIcon key="p" />,
+            () => exec("formatBlock", "<p>"),
+          ],
+        ] as [string, ReactNode, () => void][])
+      : []),
     ["Bold", <TextBIcon key="b" />, () => exec("bold")],
     ["Italic", <TextItalicIcon key="i" />, () => exec("italic")],
     ["Underline", <TextUnderlineIcon key="u" />, () => exec("underline")],
@@ -337,13 +387,11 @@ export function RichText({
       "Add link",
       <LinkIcon key="l" />,
       () => {
-        const url = prompt(
-          "Link address (https://…, mailto: or /page)",
-          "https://",
-        );
-        if (url) exec("createLink", url);
+        remember();
+        setLinking(true);
       },
     ],
+    ["Remove link", <LinkBreakIcon key="ul2" />, () => exec("unlink")],
     [
       "Bulleted list",
       <ListBulletsIcon key="ul" />,
@@ -354,6 +402,20 @@ export function RichText({
       <ListNumbersIcon key="ol" />,
       () => exec("insertOrderedList"),
     ],
+    ...(full
+      ? ([
+          [
+            "Quote",
+            <QuotesIcon key="q" />,
+            () => exec("formatBlock", "<blockquote>"),
+          ],
+          [
+            "Divider",
+            <MinusIcon key="hr" />,
+            () => exec("insertHorizontalRule"),
+          ],
+        ] as [string, ReactNode, () => void][])
+      : []),
     ["Clear formatting", <EraserIcon key="c" />, () => exec("removeFormat")],
   ];
   return (
@@ -377,18 +439,75 @@ export function RichText({
               {icon}
             </button>
           ))}
+          {full && (
+            <label
+              className="rich-upload"
+              title="Insert image"
+              onMouseDown={remember}
+            >
+              {uploading ? <span className="tool-text">…</span> : <ImageIcon />}
+              <span className="sr-only">Insert image</span>
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/gif"
+                hidden
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  e.target.value = "";
+                  if (!file) return;
+                  setUploading(true);
+                  try {
+                    const { url } = await api.upload(file);
+                    restore();
+                    exec("insertImage", url);
+                  } catch (err) {
+                    alert((err as Error).message);
+                  } finally {
+                    setUploading(false);
+                  }
+                }}
+              />
+            </label>
+          )}
         </div>
         <div
           ref={ref}
-          className="rich-body"
+          className={`rich-body ${full ? "rich-full" : ""}`}
           contentEditable
           role="textbox"
           aria-multiline="true"
           aria-label={label}
           onInput={(e) => onChange(e.currentTarget.innerHTML)}
           onBlur={(e) => onChange(e.currentTarget.innerHTML)}
+          onKeyUp={remember}
+          onMouseUp={remember}
         />
       </div>
+      <span className="field-hint">
+        Select text, then press the link button to link it to any page, section,
+        package, question or post.
+      </span>
+      {linking && (
+        <LinkPicker
+          value=""
+          title="Link the selected text"
+          onClose={() => setLinking(false)}
+          onPick={(href) => {
+            setLinking(false);
+            restore();
+            const sel = window.getSelection();
+            if (sel && sel.isCollapsed) {
+              // No text selected: insert the link text itself.
+              document.execCommand(
+                "insertHTML",
+                false,
+                `<a href="${href.replace(/"/g, "&quot;")}">${href.replace(/</g, "&lt;")}</a>`,
+              );
+              onChange(ref.current!.innerHTML);
+            } else exec("createLink", href);
+          }}
+        />
+      )}
     </div>
   );
 }

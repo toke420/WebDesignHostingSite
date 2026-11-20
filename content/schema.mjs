@@ -72,10 +72,34 @@ const ALLOWED = new Set([
   "ol",
   "li",
 ]);
-const RENAME = { b: "strong", i: "em" };
+const ALLOWED_FULL = new Set([
+  ...ALLOWED,
+  "h2",
+  "h3",
+  "h4",
+  "blockquote",
+  "hr",
+  "img",
+  "pre",
+  "code",
+  "figure",
+  "figcaption",
+]);
+const VOID = new Set(["br", "hr", "img"]);
+const RENAME = { b: "strong", i: "em", h1: "h2" };
 
-/** Keeps a small set of formatting tags; strips everything else. */
-export function sanitizeRichText(input, max = 6000) {
+function attr(raw, name) {
+  const m = raw.match(
+    new RegExp(`${name}\\s*=\\s*("([^"]*)"|'([^']*)'|([^\\s>]+))`, "i"),
+  );
+  return m ? (m[2] ?? m[3] ?? m[4] ?? "").replace(/&amp;/g, "&") : "";
+}
+
+/**
+ * Keeps a small set of formatting tags; strips everything else.
+ * `full` also allows headings, quotes, images, rules and code (pages and posts).
+ */
+export function sanitizeRichText(input, max = 6000, full = false) {
   if (typeof input !== "string") return "";
   let html = input
     .slice(0, max * 2)
@@ -99,10 +123,17 @@ export function sanitizeRichText(input, max = 6000) {
     last = re.lastIndex;
     const closing = m[1] === "/";
     let tag = m[2].toLowerCase();
-    if (!ALLOWED.has(tag)) continue;
-    tag = RENAME[tag] || tag;
-    if (tag === "br") {
-      out.push("<br>");
+    tag = (full && RENAME[tag]) || (tag === "h1" ? tag : RENAME[tag]) || tag;
+    if (!(full ? ALLOWED_FULL : ALLOWED).has(tag)) continue;
+    if (VOID.has(tag)) {
+      if (closing) continue;
+      if (tag === "img") {
+        const src = safeUrl(attr(m[3], "src"));
+        if (!src || /^(mailto|tel|#)/i.test(src)) continue;
+        out.push(
+          `<img src="${escapeText(src)}" alt="${escapeText(attr(m[3], "alt").slice(0, 200))}" loading="lazy">`,
+        );
+      } else out.push(`<${tag}>`);
       continue;
     }
     if (closing) {
@@ -112,12 +143,7 @@ export function sanitizeRichText(input, max = 6000) {
       continue;
     }
     if (tag === "a") {
-      const href = (
-        m[3].match(/href\s*=\s*("([^"]*)"|'([^']*)'|([^\s>]+))/i) || []
-      )
-        .slice(2)
-        .find((v) => v !== undefined);
-      const url = safeUrl((href || "").replace(/&amp;/g, "&"));
+      const url = safeUrl(attr(m[3], "href"));
       if (!url) continue;
       const external = /^https?:/i.test(url);
       out.push(
@@ -130,7 +156,7 @@ export function sanitizeRichText(input, max = 6000) {
   while (open.length) out.push(`</${open.pop()}>`);
   return out
     .join("")
-    .replace(/<p>(\s|<br>)*<\/p>/g, "")
+    .replace(/<(p|h2|h3|h4)>(\s|<br>)*<\/\1>/g, "")
     .slice(0, max)
     .trim();
 }
@@ -172,6 +198,173 @@ function textBlock(value, defaults, limits = {}) {
   return out;
 }
 
+export const RESERVED_SLUGS = [
+  "admin",
+  "api",
+  "examples",
+  "uploads",
+  "brand",
+  "assets",
+  "images",
+  "blog",
+  "home",
+];
+export const BLOCK_TYPES = [
+  "hero",
+  "heading",
+  "text",
+  "image",
+  "button",
+  "cards",
+  "quote",
+  "pricing",
+  "faq",
+  "cta",
+  "posts",
+  "divider",
+];
+
+function unique(base, seen) {
+  let id = base;
+  let n = 2;
+  while (seen.has(id)) id = `${base}-${n++}`;
+  seen.add(id);
+  return id;
+}
+
+function block(b, i, anchors) {
+  b = obj(b);
+  const type = BLOCK_TYPES.includes(b.type) ? b.type : "text";
+  const base = {
+    id: slug(b.id, `b${i + 1}`),
+    type,
+    anchor: b.anchor ? unique(slug(b.anchor, `section-${i + 1}`), anchors) : "",
+  };
+  switch (type) {
+    case "hero":
+      return {
+        ...base,
+        eyebrow: str(b.eyebrow, 80),
+        heading: str(b.heading, 160),
+        text: str(b.text, 600),
+        buttonLabel: str(b.buttonLabel, 60),
+        buttonLink: safeUrl(b.buttonLink),
+        image: safeUrl(b.image),
+      };
+    case "heading":
+      return { ...base, text: str(b.text, 160), level: b.level === 3 ? 3 : 2 };
+    case "text":
+      return { ...base, html: sanitizeRichText(b.html, 30000, true) };
+    case "image":
+      return {
+        ...base,
+        src: safeUrl(b.src),
+        alt: str(b.alt, 200),
+        caption: str(b.caption, 200),
+        wide: bool(b.wide),
+      };
+    case "button":
+      return {
+        ...base,
+        label: str(b.label, 60, "Find out more"),
+        link: safeUrl(b.link),
+        style: b.style === "outline" ? "outline" : "primary",
+      };
+    case "cards":
+      return {
+        ...base,
+        heading: str(b.heading, 160),
+        items: list(b.items, 6).map((c) => ({
+          title: str(obj(c).title, 80),
+          text: str(obj(c).text, 300),
+          link: safeUrl(obj(c).link),
+        })),
+      };
+    case "quote":
+      return { ...base, text: str(b.text, 600), cite: str(b.cite, 120) };
+    case "pricing":
+      return {
+        ...base,
+        heading: str(b.heading, 160),
+        service: SERVICE_IDS.includes(b.service) ? b.service : "hosting",
+      };
+    case "faq":
+      return {
+        ...base,
+        heading: str(b.heading, 160),
+        ids: list(b.ids, 40)
+          .map((x) => slug(x, ""))
+          .filter(Boolean),
+      };
+    case "cta":
+      return {
+        ...base,
+        heading: str(b.heading, 160),
+        text: str(b.text, 300),
+        buttonLabel: str(b.buttonLabel, 60, "Free consultation"),
+        buttonLink: safeUrl(b.buttonLink),
+      };
+    case "posts":
+      return {
+        ...base,
+        heading: str(b.heading, 160),
+        count: Math.min(12, Math.max(1, Math.round(Number(b.count) || 3))),
+        tag: str(b.tag, 40),
+      };
+    default:
+      return base;
+  }
+}
+
+function page(pg, i, slugs) {
+  pg = obj(pg);
+  const anchors = new Set();
+  let s = slug(pg.slug || pg.title, `page-${i + 1}`);
+  if (RESERVED_SLUGS.includes(s)) s = `${s}-page`;
+  return {
+    id: slug(pg.id, `p${i + 1}`),
+    slug: unique(s, slugs),
+    title: str(pg.title, 120, "Untitled page") || "Untitled page",
+    description: str(pg.description, 300),
+    visible: bool(pg.visible, true),
+    blocks: list(pg.blocks, 60).map((b, j) => block(b, j, anchors)),
+  };
+}
+
+function isoDate(value) {
+  const v = str(value, 10);
+  return /^\d{4}-\d{2}-\d{2}$/.test(v) && !isNaN(Date.parse(v))
+    ? v
+    : new Date().toISOString().slice(0, 10);
+}
+
+function post(p, i, slugs) {
+  p = obj(p);
+  return {
+    id: slug(p.id, `post-${i + 1}`),
+    slug: unique(slug(p.slug || p.title, `post-${i + 1}`), slugs),
+    title: str(p.title, 160, "Untitled post") || "Untitled post",
+    excerpt: str(p.excerpt, 400),
+    author: str(p.author, 80),
+    date: isoDate(p.date),
+    tags: list(p.tags, 8)
+      .map((t) => str(t, 30))
+      .filter(Boolean),
+    cover: safeUrl(p.cover),
+    coverAlt: str(p.coverAlt, 200),
+    body: sanitizeRichText(p.body, 60000, true),
+    visible: bool(p.visible, true),
+    featured: bool(p.featured),
+  };
+}
+
+function menu(items, fallback) {
+  return (Array.isArray(items) ? items : fallback)
+    .slice(0, 12)
+    .map((m) => ({ label: str(obj(m).label, 40), href: safeUrl(obj(m).href) }))
+    .filter((m) => m.label && m.href);
+}
+
 /** Returns a complete, cleaned content document. Missing parts fall back to defaults. */
 export function normalizeContent(input, defaults) {
   const c = obj(input);
@@ -182,6 +375,9 @@ export function normalizeContent(input, defaults) {
   const projectsIn = Array.isArray(c.projects) ? c.projects : d.projects;
   const faqsIn = Array.isArray(c.faqs) ? c.faqs : d.faqs;
   const seen = new Set();
+  const faqIds = new Set();
+  const pageSlugs = new Set();
+  const postSlugs = new Set();
 
   return {
     version: 1,
@@ -284,9 +480,41 @@ export function normalizeContent(input, defaults) {
     faqs: faqsIn
       .slice(0, 40)
       .map((f) => ({
+        // Questions saved before ids existed reuse the default id for the same question.
+        id:
+          obj(f).id ||
+          (d.faqs || []).find((x) => x.question === str(obj(f).question, 200))
+            ?.id,
         question: str(obj(f).question, 200),
         answer: sanitizeRichText(obj(f).answer),
       }))
-      .filter((f) => f.question),
+      .filter((f) => f.question)
+      .map((f) => ({
+        ...f,
+        // Stable id so other pages can link to a specific question.
+        id: unique(
+          slug(
+            f.id || f.question.split(/\s+/).slice(0, 6).join("-"),
+            "question",
+          ),
+          faqIds,
+        ),
+      })),
+    pages: (Array.isArray(c.pages) ? c.pages : d.pages || [])
+      .slice(0, 60)
+      .map((pg, i) => page(pg, i, pageSlugs)),
+    blog: {
+      title: str(obj(c.blog).title, 80, d.blog?.title || "Blog") || "Blog",
+      intro: str(obj(c.blog).intro, 400, d.blog?.intro || ""),
+      enabled: bool(obj(c.blog).enabled, d.blog?.enabled ?? true),
+    },
+    posts: (Array.isArray(c.posts) ? c.posts : d.posts || [])
+      .slice(0, 300)
+      .map((p, i) => post(p, i, postSlugs))
+      .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0)),
+    menus: {
+      header: menu(obj(c.menus).header, d.menus?.header || []),
+      footer: menu(obj(c.menus).footer, d.menus?.footer || []),
+    },
   };
 }

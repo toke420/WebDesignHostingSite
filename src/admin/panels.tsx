@@ -11,6 +11,8 @@ import {
   TextAaIcon,
   WarningIcon,
   CursorClickIcon,
+  FilesIcon,
+  NewspaperIcon,
   DownloadSimpleIcon,
 } from "@phosphor-icons/react";
 import {
@@ -41,6 +43,9 @@ export type Selection = {
   faq?: number;
   project?: number;
   group?: string;
+  pageId?: string;
+  postId?: string;
+  block?: number;
   fromPreview?: boolean;
 };
 type PanelProps = {
@@ -66,6 +71,18 @@ function useFocusItem(id: string | null, deps: unknown[]) {
 
 export function HomePanel({ content, select }: PanelProps) {
   const cards = [
+    {
+      panel: "pages",
+      icon: FilesIcon,
+      title: "Add & edit pages",
+      body: `${content.pages.length} extra page${content.pages.length === 1 ? "" : "s"} built from blocks, with links to any spot.`,
+    },
+    {
+      panel: "blog",
+      icon: NewspaperIcon,
+      title: "Write a blog post",
+      body: `${content.posts.filter((p) => p.visible).length} live posts. Draft privately, then publish.`,
+    },
     {
       panel: "packages",
       icon: CurrencyDollarIcon,
