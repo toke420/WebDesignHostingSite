@@ -1,0 +1,133 @@
+personas:
+- id: persona-1
+  name: Local business owner
+  role: Sole trader or small shop owner needing a first proper web presence
+  trigger: Starting the business, or realising competitors look more credible online
+    [inferred]
+  deal_breakers:
+  - Hidden costs
+  - Lock-in contracts
+  - Jargon
+  - Being upsold to a bigger package
+  tasks:
+  - id: task-1
+    description: Request a website and logo quote
+    workflow_steps:
+    - Land on hero
+    - Open Web & logo design tab and compare Packages 1-3
+    - Read logo pack ($110)
+    - Click to request a consultation
+    - Fill name, email, service, project detail; tick consent
+    - Receive case number
+    - Optionally open chat
+    inputs_needed: Business name and a rough idea of what they want; no technical
+      knowledge
+    success_criteria:
+    - Finds design and logo prices within 2 clicks of landing
+    - Submits the request in 1 dialog with at most 4 fields plus consent
+    - Sees a case number on screen
+    - Gets a staff reply within 1 business day
+    - Can tell which package suits them before submitting
+    failure_modes:
+    - Packages 2 and 3 have near-identical descriptions, so the price difference is
+      unclear
+    - Helpdesk unreachable; sees error and abandons
+    - Assumes the request booked an appointment
+    research_expanded: false
+- id: persona-2
+  name: SMB office manager
+  role: Person at a growing small business who looks after the tech without it being
+    their job
+  trigger: An outage, new hires, or a move to remote or hybrid work [inferred]
+  deal_breakers:
+  - Slow response
+  - No real person to talk to
+  - Unclear hourly billing
+  tasks:
+  - id: task-2
+    description: Get fast help with a broken server or network
+    workflow_steps:
+    - Open IT support tab
+    - Check Servers & infrastructure rate ($150/h)
+    - Open chat or request a consultation for IT support
+    - Describe the outage
+    - Talk to a real person
+    - Agree scope and access before work starts
+    inputs_needed: Symptoms, business impact, and who can grant access
+    success_criteria:
+    - Reaches a human in chat within 15 minutes in business hours
+    - Knows the hourly rate and any minimum charge before agreeing to work
+    - Gets the work confirmed in writing
+    - Knows whether the issue counts as urgent and the expected response time
+    failure_modes:
+    - Chat unstaffed with no stated response time
+    - Minimum charge not shown on the site
+    - Urgent issues submitted through the consultation form
+    research_expanded: false
+- id: persona-3
+  name: Startup / side-project builder
+  role: Technical, price-sensitive founder or hobbyist launching a site or app
+  trigger: Launching an MVP or leaving unreliable cheap hosting [inferred]
+  deal_breakers:
+  - Price above about $10/month
+  - No SSH or SFTP control
+  - Slow servers far from their audience
+  tasks:
+  - id: task-3
+    description: Choose and launch Starter hosting
+    workflow_steps:
+    - Open Web hosting tab and compare Starter, Standard and Pro
+    - Check FAQ for stack (LEMP, SFTP, DNS, one-click apps) and data-centre locations
+    - Request a consultation for Web hosting
+    - Agree a location near their audience
+    - Receive access details
+    - Deploy
+    inputs_needed: Domain, stack or app (e.g. WordPress), audience location
+    success_criteria:
+    - Confirms PHP/MariaDB and SFTP support from the site alone
+    - Knows data-centre options (Melbourne, Sydney, US, UK) before submitting
+    - Has the site live on the agreed plan with SSL working
+    - Knows the time from request to live hosting up front
+    failure_modes:
+    - Expects instant self-serve signup and leaves at the consultation step
+    - Pro hosting has no price
+    - SSH access not mentioned, only SFTP
+    research_expanded: false
+- id: persona-5
+  name: WebTechPros staff (internal)
+  role: Team member working requests in the Helpdesk inbox
+  trigger: A new consultation request or chat arrives
+  deal_breakers:
+  - Missed notifications
+  - Messy handover between chat and email
+  tasks:
+  - id: task-4
+    description: Triage a new consultation request
+    workflow_steps:
+    - Receive notification
+    - Open Helpdesk inbox
+    - Read the case (name, email, service, message)
+    - Reply by chat or email to arrange a time
+    - Record scope and quote
+    - Close or hand off
+    inputs_needed: Inbox login, working email notifications, current price list
+    success_criteria:
+    - Every submitted request appears in the inbox with its case number
+    - Staff notified within 5 minutes
+    - First reply sent within 1 business day
+    - No request lost when the visitor moves from form to chat
+    - Visitor-selected service or package visible without asking again
+    failure_modes:
+    - Notifications not configured (email delivery not yet verified per README)
+    - Admin password lost or locked out
+    - Spam gets past the honeypot field
+    research_expanded: false
+anti_profile:
+  description: Not target customers
+  segments:
+  - Enterprises needing SLAs, 24/7 on-call or compliance certifications
+  - Bargain shoppers wanting instant self-serve ~$2/month hosting with no human contact
+  - Anyone expecting unlimited resources
+provisional: true
+note: Built from README.md and src/content.ts without product-discovery research;
+  revise after discovery.

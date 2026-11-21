@@ -9,3 +9,8 @@ test-results/
 playwright-report/
 *.log
 *.tsbuildinfo
+
+# SweetClaude recovery snapshots and manifests
+.sweetclaude/state/recovery-runs/
+.sweetclaude/cache/
+.claude/settings.local.json

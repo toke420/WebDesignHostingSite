@@ -1,0 +1,44 @@
+{
+  "timestamp": "20261121T071950Z",
+  "version": "unknown",
+  "summary": {
+    "auto_fixed": 0,
+    "user_fixed": 0,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 1,
+    "warnings": 4,
+    "info": 0,
+    "total_findings": 5
+  },
+  "findings": [
+    {
+      "id": "hook-health:missing:hooks.json",
+      "severity": "error",
+      "summary": "SweetClaude hooks configuration is missing"
+    },
+    {
+      "id": "hook-health:missing-rule:interaction-model.md",
+      "severity": "warning",
+      "summary": "SweetClaude rules file interaction-model.md is missing"
+    },
+    {
+      "id": "hook-health:missing-rule:phase-gates.md",
+      "severity": "warning",
+      "summary": "SweetClaude rules file phase-gates.md is missing"
+    },
+    {
+      "id": "hook-health:missing-rule:tdd-levels.md",
+      "severity": "warning",
+      "summary": "SweetClaude rules file tdd-levels.md is missing"
+    },
+    {
+      "id": "work-item-artifacts:missing-dir",
+      "severity": "warning",
+      "summary": "Work-item artifacts feature is active but .sweetclaude/work/ does not exist"
+    }
+  ],
+  "findings_total": 5,
+  "findings_truncated": 0,
+  "menu_preference": "skip"
+}
