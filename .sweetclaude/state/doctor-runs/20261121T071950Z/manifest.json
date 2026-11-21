@@ -1,0 +1,18 @@
+{
+  "timestamp": "20261121T071950Z",
+  "version": "unknown",
+  "safety_branch": "",
+  "actions": [],
+  "suppressions_pruned": [],
+  "post_fix_findings": [],
+  "summary": {
+    "auto_fixed": 0,
+    "user_fixed": 0,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 1,
+    "warnings": 4,
+    "info": 0,
+    "total_findings": 5
+  }
+}

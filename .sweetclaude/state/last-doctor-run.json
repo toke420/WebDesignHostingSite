@@ -1,4 +1,8 @@
 {
+  "timestamp": "20261121T071950Z",
+  "version": "unknown",
+  "summary": {
+    "auto_fixed": 0,
   "timestamp": "20261119T155304Z",
   "version": "unknown",
   "summary": {
@@ -7,6 +11,9 @@
     "skipped": 0,
     "failed": 0,
     "errors": 1,
+    "warnings": 4,
+    "info": 0,
+    "total_findings": 5
     "warnings": 3,
     "info": 0,
     "total_findings": 4
@@ -31,6 +38,16 @@
       "id": "hook-health:missing-rule:tdd-levels.md",
       "severity": "warning",
       "summary": "SweetClaude rules file tdd-levels.md is missing"
+    },
+    {
+      "id": "work-item-artifacts:missing-dir",
+      "severity": "warning",
+      "summary": "Work-item artifacts feature is active but .sweetclaude/work/ does not exist"
+    }
+  ],
+  "findings_total": 5,
+  "findings_truncated": 0,
+  "menu_preference": "skip"
     }
   ],
   "findings_total": 4,

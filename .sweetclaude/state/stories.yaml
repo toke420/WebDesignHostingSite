@@ -1,0 +1,96 @@
+format: gherkin
+scope: all
+slc_promise: null
+stories:
+- id: US-LBO-001
+  title: Compare design packages and logo price
+  persona_id: persona-1
+  epic_id: null
+  format: gherkin
+  area: Pricing
+  status: "partial \u2014 prices tested; package differentiation is a gap"
+- id: US-LBO-002
+  title: Request a free consultation
+  persona_id: persona-1
+  epic_id: null
+  format: gherkin
+  area: Consultation
+  status: covered by existing test
+- id: US-LBO-003
+  title: Recover when the helpdesk is unavailable
+  persona_id: persona-1
+  epic_id: null
+  format: gherkin
+  area: Consultation
+  status: covered by implementation; test not confirmed
+- id: US-SMB-001
+  title: See support rates and charges before engaging
+  persona_id: persona-2
+  epic_id: null
+  format: gherkin
+  area: IT support
+  status: "gap \u2014 minimum charge not published"
+- id: US-SMB-002
+  title: Reach a real person fast via chat
+  persona_id: persona-2
+  epic_id: null
+  format: gherkin
+  area: Chat
+  status: "partial \u2014 chat exists; response-time expectation is a gap"
+- id: US-SMB-003
+  title: Know how to report an urgent issue
+  persona_id: persona-2
+  epic_id: null
+  format: gherkin
+  area: IT support
+  status: gap
+- id: US-DEV-001
+  title: Confirm the hosting stack and locations before enquiring
+  persona_id: persona-3
+  epic_id: null
+  format: gherkin
+  area: Hosting
+  status: covered by FAQ content
+- id: US-DEV-002
+  title: Compare hosting plans
+  persona_id: persona-3
+  epic_id: null
+  format: gherkin
+  area: Hosting
+  status: "partial \u2014 Pro is quote-only"
+- id: US-DEV-003
+  title: Know the time from request to live hosting
+  persona_id: persona-3
+  epic_id: null
+  format: gherkin
+  area: Hosting
+  status: gap
+- id: US-STF-001
+  title: Every request lands in the inbox with its case number
+  persona_id: persona-5
+  epic_id: null
+  format: gherkin
+  area: Inbox
+  status: covered by existing test
+- id: US-STF-002
+  title: Get notified of new requests within 5 minutes
+  persona_id: persona-5
+  epic_id: null
+  format: gherkin
+  area: Notifications
+  status: "gap \u2014 email delivery not verified in production"
+- id: US-STF-003
+  title: Recover admin access safely
+  persona_id: persona-5
+  epic_id: null
+  format: gherkin
+  area: Access
+  status: gap
+- id: US-STF-004
+  title: Keep spam out of the inbox
+  persona_id: persona-5
+  epic_id: null
+  format: gherkin
+  area: Spam
+  status: covered by implementation (honeypot)
+current_file: .sweetclaude/product/stories/webtechpros.net-user-stories-draft-v1.0-20261121.md
