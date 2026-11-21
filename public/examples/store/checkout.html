@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Checkout | Offbeat Audio · WebTechPros concept</title>
+<meta name="description" content="Headphones and speakers designed for everyday listening.">
+<link rel="stylesheet" href="../shared/concept.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body class="store page-checkout">
+<div class="concept-bar"><span>WebTechPros design concept · sample business and data</span><a href="/#projects">← Back to WebTechPros</a></div>
+<header class="site-header"><div class="wrap head">
+<a class="logo" href="index.html">offbeat<sup>®</sup></a>
+<button class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav">☰</button>
+<nav id="nav" class="site-nav" aria-label="Main"><a href="index.html">Home</a><a href="shop.html">Shop</a><a href="about.html">Our story</a></nav>
+<a class="cart-link" href="cart.html" aria-label="Cart">Cart <span class="cart-count" aria-live="polite">0</span></a>
+</div></header>
+<main id="main">
+<section class="wrap checkout">
+<form id="checkout" novalidate>
+  <h1>Checkout</h1>
+  <fieldset><legend>Contact</legend><label>Email<input type="email" name="email" required autocomplete="email"></label></fieldset>
+  <fieldset><legend>Delivery</legend>
+    <div class="row"><label>First name<input name="first" required autocomplete="given-name"></label><label>Last name<input name="last" required autocomplete="family-name"></label></div>
+    <label>Address<input name="address" required autocomplete="street-address"></label>
+    <div class="row three"><label>Suburb<input name="suburb" required></label><label>State<select name="state"><option>VIC</option><option>NSW</option><option>QLD</option><option>SA</option><option>WA</option><option>TAS</option><option>ACT</option><option>NT</option></select></label><label>Postcode<input name="postcode" required pattern="\d{4}" inputmode="numeric"></label></div>
+  </fieldset>
+  <fieldset><legend>Shipping</legend>
+    <label class="radio"><input type="radio" name="ship" value="0" checked> Standard (3–6 days) <b data-ship-label>Free over $150</b></label>
+    <label class="radio"><input type="radio" name="ship" value="14.95"> Express (1–2 days) <b>$14.95</b></label>
+  </fieldset>
+  <fieldset><legend>Payment</legend><p class="notice">Payments are disabled in this design concept. A real store would show a secure card form or Apple Pay / Google Pay here.</p></fieldset>
+  <button class="btn wide" type="submit">Place demo order</button>
+</form>
+<aside class="summary" id="summary"></aside>
+</section>
+<section class="wrap confirm" id="confirm" hidden tabindex="-1"><h1>Order confirmed 🎉</h1><p>Order <strong id="order-no"></strong>. In a real store you'd now receive an email receipt and tracking link.</p><a class="btn" href="shop.html">Keep shopping</a></section>
+</main>
+<footer class="site-footer"><div class="wrap foot">
+<p class="logo">offbeat<sup>®</sup></p>
+<div><strong>Shop</strong><a href="shop.html?cat=headphones">Headphones</a><a href="shop.html?cat=earbuds">Earbuds</a><a href="shop.html?cat=speakers">Speakers</a></div>
+<div><strong>Help</strong><a href="about.html#shipping">Shipping</a><a href="about.html#returns">Returns</a><a href="about.html">Our story</a></div>
+<form class="mini-sub" onsubmit="event.preventDefault();concept.toast('Thanks! You’re on the list.');this.reset()"><label for="sub">Get 10% off your first order</label><div><input id="sub" type="email" required placeholder="you@email.com"><button>Join</button></div></form>
+</div><p class="wrap fine">Design concept. No products are for sale and no payments are taken.</p></footer>
+<script src="../shared/concept.js"></script>
+<script src="site.js"></script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+{
+  "timestamp": "20261119T155304Z",
+  "version": "unknown",
+  "safety_branch": "doctor/run-20261119T155255Z",
+  "actions": [
+    {
+      "action": "auto-fix",
+      "finding_id": "hook-health:missing:hooks.json",
+      "category": "hook_health",
+      "description": "SweetClaude hooks configuration is missing",
+      "file_path": "/root/.claude/hooks/sweetclaude/hooks.json",
+      "before_hash": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "after_hash": "sha256:51f9bac5ca6f884b91bd9eec5e8ddaac507849ecb2b30d1dd88634ee5ded1ebe",
+      "timestamp": "20261119T155255Z"
+    },
+    {
+      "action": "auto-fix",
+      "finding_id": "hook-health:missing-rule:interaction-model.md",
+      "category": "hook_health",
+      "description": "SweetClaude rules file interaction-model.md is missing",
+      "file_path": "/root/.claude/rules/sweetclaude/interaction-model.md",
+      "before_hash": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "after_hash": "sha256:5aa4428fe2bfb1dba0e056a3462a366f58bfe2c674d3a7b1a169f23b7c1305a5",
+      "timestamp": "20261119T155255Z"
+    },
+    {
+      "action": "auto-fix",
+      "finding_id": "hook-health:missing-rule:phase-gates.md",
+      "category": "hook_health",
+      "description": "SweetClaude rules file phase-gates.md is missing",
+      "file_path": "/root/.claude/rules/sweetclaude/phase-gates.md",
+      "before_hash": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "after_hash": "sha256:e202d3b753dc9abbc9bfcb4509c0005d7d5c72ea6684c47a65d694930fb41785",
+      "timestamp": "20261119T155255Z"
+    },
+    {
+      "action": "auto-fix",
+      "finding_id": "hook-health:missing-rule:tdd-levels.md",
+      "category": "hook_health",
+      "description": "SweetClaude rules file tdd-levels.md is missing",
+      "file_path": "/root/.claude/rules/sweetclaude/tdd-levels.md",
+      "before_hash": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "after_hash": "sha256:3781260b588c3ad33bfd1b69424ab1a226ee81b2dbde03e5ad53f921f043315d",
+      "timestamp": "20261119T155255Z"
+    }
+  ],
+  "suppressions_pruned": [],
+  "post_fix_findings": [],
+  "summary": {
+    "auto_fixed": 4,
+    "user_fixed": 0,
+    "skipped": 0,
+    "failed": 0,
+    "errors": 1,
+    "warnings": 3,
+    "info": 0,
+    "total_findings": 4
+  }
+}

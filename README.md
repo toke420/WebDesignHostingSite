@@ -13,29 +13,72 @@ npm run setup:helpdesk
 npm run dev
 ```
 
-`npm run dev` starts the website on port **5173** and the real Helpdesk backend on loopback port **8080**. It waits for backend readiness before starting Vite. Existing services are not stopped or silently reused. To intentionally use another backend, set `HELPDESK_PROXY_TARGET` in the shell before running the command.
+`npm run dev` starts the website on port **5173**, the real Helpdesk backend on loopback port **8080** and the content server (for `/admin`) on loopback port **8090**. It waits for backend readiness before starting Vite. Existing services are not stopped or silently reused. To intentionally use another backend, set `HELPDESK_PROXY_TARGET` in the shell before running the command.
 
 The staff inbox is on port 8080. Local, randomly generated initial admin credentials are stored in **`.local/admin.json`**, mode 600. They are never printed or committed. First login requires a password change; also replace the placeholder operator email. Local installation is not a production deployment.
+
+The website editor is at **http://localhost:5173/admin/**. Its local password is generated once and stored in **`.local/content-admin.json`** (mode 600, never committed). Content you edit locally lives in `.data/content/`.
 
 `npm run dev:site` starts the frontend alone. Consultation and chat still require Helpdesk. They show errors rather than claiming requests succeeded when the backend is unavailable.
 
 Each cloud task is already isolated. Use this checkout; do not create a Git worktree unless explicitly requested.
 
-## Edit the site
+## Edit the site (no coding needed)
 
-| Change                                                        | Location                             |
-| ------------------------------------------------------------- | ------------------------------------ |
-| Brand copy, prices, plan features, FAQs, project descriptions | `src/content.ts`                     |
-| Colours, fonts, spacing, responsive layouts                   | `src/styles.css`                     |
-| Section order and page components                             | `src/App.tsx`                        |
-| Titles, metadata and canonical URL                            | `index.html`                         |
-| Project images and illustrative concept pages                 | `public/images/`, `public/examples/` |
-| Consultation API and official widget loader                   | `src/helpdesk.ts`                    |
-| Chat greeting, branding, agents, notifications                | Helpdesk inbox → Settings            |
+Sign in at **`/admin`** to change the site in a browser:
 
-Use a numeric price or `null` for a quote-only package. All pricing is AUD. There is no browser CMS: the content file is the editable source; publish changes by rebuilding. The Helpdesk admin edits helpdesk settings, not the marketing page.
+| Section | What you can change |
+| --- | --- |
+| **Pages** | Add pages built from blocks: hero, heading, rich text, image, button, cards, quote, live prices, questions, call to action, latest posts and divider. Start from a template (blank, about, service, contact), reorder/duplicate/delete blocks, set the web address and Google description, and keep pages hidden until they're ready. |
+| **Blog** | Write posts with headings, quotes, images and links; topics, author, date, cover image and a featured post. The blog has topic filters, related posts and an RSS feed at `/blog/rss.xml`. Posts start as hidden drafts. |
+| **Menus** | Choose the top menu and footer links, pointing at any page, post, section or exact spot. |
+| **Links to anything** | Every link (buttons, cards, menus, text) uses a picker listing all pages, page blocks, home-page sections, packages, questions and posts. Give a block a link name to link straight to it (e.g. `/web-hosting#plans`), and optionally highlight exact text on arrival (`?hl=…`). Every block, page and post has a "Copy link" button. |
+| **Visual preview** | Click any heading, paragraph, price, feature or FAQ answer in the live preview and type over it. Clicking a block (a price card, FAQ, showcase tile) opens its settings. Preview at desktop, tablet or phone width. |
+| **Packages & prices** | Prices (or "quote only"), price wording, descriptions, included features, highlighted package and badge, add/duplicate/reorder/delete packages, logo pack price. |
+| **Questions & answers** | Add, reorder, delete and rewrite FAQs. Answers support bold, italic, links and lists. |
+| **Showcase sites** | Show/hide, reorder, rename and relink the "What we build" examples; upload preview images or add real client work. |
+| **Page text** | Every heading and paragraph on the home page, grouped by section. |
+| **Business & Google** | Business name, contact email/phone (shown in the footer), consultation length, Google title/description with a search-result preview, and the logo pack download. |
+| **Site settings** | Announcement bar (on/off, message, link) and the live-chat button. |
+| **History** | The last 30 published versions; restore any of them, or restore the original content. |
+| **Account** | Change the admin password (signs out other devices). |
 
-The supplied prices are preserved. **Pro hosting has no supplied price**, so it is quote-only. Design packages do not invent page counts, functionality or revision allowances. Final quotes confirm scope and tax treatment. Email storage is stated at package level, not assumed to be per mailbox for Pro.
+The site is a single-page app: the home page, custom pages (`/<address>`), the blog (`/blog`, `/blog/<post>`, `/blog?tag=<topic>`) and a "not found" page are all rendered from published content. Links like `/#faq-<id>` open that question, `/#plan-<service>-<package>` switches to the right package tab, and `?hl=<text>` scrolls to and highlights the text. `/sitemap.xml` (home, visible pages, blog and posts) and `/blog/rss.xml` are generated by the content server. Page addresses can't reuse reserved names (`admin`, `api`, `blog`, `examples`, `uploads`, `brand`, `assets`, `images`, `home`).
+
+Edits autosave as a **draft** that visitors can't see. **Publish changes** makes them live immediately; no rebuild is needed. Undo/redo (Ctrl+Z / Ctrl+Y) covers the whole session, and **Discard changes** returns to the live version.
+
+How it works: `server/content-server.mjs` (Node.js built-ins only) stores `published.json`, `draft.json`, version history and uploaded images in `CONTENT_DATA_DIR`. The public site reads `/api/content` on load and falls back to `content/default-content.json` if the content server is unreachable. Every save is validated and cleaned by `content/schema.mjs`; FAQ rich text is reduced to a safe allow-list (paragraphs, bold, italic, underline, lists and http/https/mailto/tel/relative links); page text blocks and blog posts also allow headings, quotes, dividers, code and images. Content saved by an older version is upgraded automatically when the content server starts (new sections get their defaults; nothing already edited is changed). Admin sessions are signed, HttpOnly, `SameSite=Strict` cookies (12 hours). Writes require a same-origin `Origin` header, sign-in is throttled to 8 attempts per 15 minutes per IP, and uploads must be real PNG, JPEG, WebP or GIF files under 8 MB (SVG is refused).
+
+Developers can still change:
+
+| Change | Location |
+| --- | --- |
+| Default content (first run and fallback) | `content/default-content.json` |
+| Colours, fonts, spacing, responsive layouts | `src/styles.css` |
+| Section order and page components | `src/App.tsx` (wrap new text in `<T path="…">` to make it editable) |
+| Admin panels | `src/admin/` |
+| Example concept sites | `scripts/examples/<id>.mjs`, then `npm run build:examples` |
+| Logo pack, favicons and banners | `scripts/brand/`, then `npm run build:logo` |
+| Consultation API and official widget loader | `src/helpdesk.ts` |
+| Chat greeting, branding, agents, notifications | Helpdesk inbox → Settings |
+
+All pricing is AUD. A price left empty ("quote only") displays "Let's talk." rather than inventing a price. **Pro hosting has no supplied price**, so it ships as quote-only. Final quotes confirm scope and tax treatment.
+
+To reset a forgotten admin password on the server: `npm run admin:password` (or `NEW_ADMIN_PASSWORD=… npm run admin:password`). It signs out every existing session.
+
+## Logo pack
+
+**`public/brand/webtechpros-logo-pack.zip`** (also downloadable from `/admin` → Business & Google) contains:
+
+- `svg/` horizontal, stacked and wordmark logos (dark, light, black, white) and icons. Lettering is converted to outlines, so no fonts are needed.
+- `png/` transparent logos at 400/800/1600/3200 px wide, and icons from 16 to 1024 px.
+- `jpg/` the same logos on solid backgrounds.
+- `favicon/` `favicon.ico` (16/32/48), `favicon.svg`, Apple touch and Android icons, a maskable icon, `site.webmanifest` and an HTML snippet.
+- `social/` profile pictures.
+- `banners/` 17 PNG + JPG advertising sizes: Google Display (728×90, 970×250, 320×50, 320×100, 300×250, 336×280, 160×600, 300×600), Facebook/LinkedIn link 1200×628, Instagram 1080×1080 / 1080×1350 / story 1080×1920, Facebook cover, LinkedIn banner, X header, YouTube channel art and an email-signature banner.
+- `README.txt` with colours, fonts, clear space and usage rules.
+
+Rebuild with `npm run build:logo` after `python3 scripts/brand/glyphs.py` (needs `pip install fonttools brotli`, only if the font changes). The site's own favicons are refreshed from the same artwork.
 
 ## Consultation and chat
 
@@ -66,7 +109,7 @@ npm run build
 npm test
 ```
 
-Tests use `/usr/bin/chromium`; override with `CHROMIUM_PATH` as needed. They start a disposable Helpdesk on **8081** and production preview on **4173**, exercising prices, real case creation, widget resume, backend failure handling, keyboard controls, project assets, FAQs and viewports from 360px to 1440px. A temporary database keeps test cases out of development/customer data.
+Tests use `/usr/bin/chromium`; override with `CHROMIUM_PATH` as needed. They start a disposable Helpdesk on **8081**, a disposable content server on **8091** and production preview on **4173**, exercising prices, real case creation, widget resume, backend failure handling, keyboard controls, project assets, FAQs, viewports from 360px to 1440px, the admin editor (sign-in, inline and form edits, drafts, publishing, history restore, building a page from blocks, the link picker with exact-text links, menus and blog posts), admin API protections, custom pages, the blog, deep links, the sitemap and RSS, and the example sites. Temporary data directories keep test data out of development/customer data.
 
 Run upstream Helpdesk tests without changing its checkout:
 
@@ -77,20 +120,34 @@ GOCACHE="$PWD/../go-cache" GOPATH="$PWD/../go-path" GOTOOLCHAIN=local ../go/bin/
 
 ## Deploy on Virtualmin Pro / LEMP
 
-1. Install dependencies and the pinned backend on the deployment host; run `npm run build`. Serve **only `dist/`** as the Nginx document root. Never expose the repository, `.local/`, `.data/`, or environment files.
-2. Provision a dedicated service account, persistent data directory, real operator email and strong unique admin password. Use `ops/helpdesk.env.example` outside the public document root with mode 600.
-3. Run the backend with a service manager; `ops/helpdesk.service.example` is a template, not an installed service. Replace paths and user. The Go binary does not source `.env` itself; the service injects variables.
-4. Merge `ops/nginx.conf.example` into Virtualmin’s HTTPS server configuration. Route `/widget.js` and `/api/widget/` to the backend. Disable buffering for Server-Sent Events. Vite’s proxy is **not** part of static `dist/`.
-5. Provision an HTTPS staff subdomain, for example `helpdesk.webtechpros.net`, and proxy all its paths to Helpdesk. Set `HELPDESK_BASE_URL` to the actual staff URL; restrict `HELPDESK_ALLOWED_ORIGINS` to the public site’s exact HTTPS origins. The suggested subdomain is not provisioned here.
-6. Alternatively, set `VITE_HELPDESK_URL` to a separate public HTTPS Helpdesk origin **before building**, then configure its allowed origins. Never prefix secrets with `VITE_`; those values are public.
-7. Configure email/notifications, sign in, replace the initial password/email, set availability and branding, and submit a live request. Verify inbox arrival and email delivery before announcing the site.
-8. Use Helpdesk’s supported database backup flow. Agree backup retention and restore procedures separately from plan allowances.
+1. Install dependencies and the pinned backend on the deployment host; run `npm run build`. Serve **only `dist/`** as the Nginx document root. Never expose the repository, `.local/`, `.data/`, the content data directory or environment files.
+2. Run the content server with a service manager using `ops/content.service.example` and `ops/content.env.example` (Node.js 22+). Set `CONTENT_DATA_DIR` to a persistent, backed-up folder outside the document root. Set the admin password once with `npm run admin:password` (or leave it to generate `initial-admin-password.txt` in the data folder, sign in, change it and delete the file). The Nginx example routes `/admin/`, `/api/content`, `/api/admin/`, `/uploads/`, `/sitemap.xml` and `/blog/rss.xml`.
+3. Provision a dedicated service account, persistent data directory, real operator email and strong unique admin password. Use `ops/helpdesk.env.example` outside the public document root with mode 600.
+4. Run the backend with a service manager; `ops/helpdesk.service.example` is a template, not an installed service. Replace paths and user. The Go binary does not source `.env` itself; the service injects variables.
+5. Merge `ops/nginx.conf.example` into Virtualmin’s HTTPS server configuration. Route `/widget.js` and `/api/widget/` to the backend. Disable buffering for Server-Sent Events. Vite’s proxy is **not** part of static `dist/`.
+6. Provision an HTTPS staff subdomain, for example `helpdesk.webtechpros.net`, and proxy all its paths to Helpdesk. Set `HELPDESK_BASE_URL` to the actual staff URL; restrict `HELPDESK_ALLOWED_ORIGINS` to the public site’s exact HTTPS origins. The suggested subdomain is not provisioned here.
+7. Alternatively, set `VITE_HELPDESK_URL` to a separate public HTTPS Helpdesk origin **before building**, then configure its allowed origins. Never prefix secrets with `VITE_`; those values are public.
+8. Configure email/notifications, sign in, replace the initial password/email, set availability and branding, and submit a live request. Verify inbox arrival and email delivery before announcing the site.
+9. Use Helpdesk’s supported database backup flow. Agree backup retention and restore procedures separately from plan allowances.
 
 No DNS, certificates, Virtualmin configuration, production inbox, email delivery or public deployment has been performed. Local tests do not establish production readiness.
 
 ## Assets and content
 
-The four previews are original **illustrative concepts**, not client work. The CRM uses fictional sample data; the store has no checkout. Replace them with authorised portfolio work when available. Images are local generated artwork and screenshots of the included concepts, with no runtime stock-image requests.
+"What we build" shows eight original, multi-page **illustrative concepts** in `public/examples/<id>/`, each with its own visual style and working pages:
+
+| Concept | Pages and features |
+| --- | --- |
+| Business (accountants) | Home, services & fee table with FAQ accordion, team profiles, validated contact form with "open now" hours |
+| Ecommerce (audio store) | Home, shop with category/price/stock filters and sorting, product pages with colour and quantity, persistent cart, checkout with shipping options |
+| Restaurant | Home with live open/closed status, tabbed menu with dietary filters, reservations with per-day time slots, private dining enquiries |
+| Trades (electrician) | Home, services & prices, suburb coverage checker, four-step quote request |
+| Health clinic | Home, filterable treatments & fees, practitioner profiles, new-patient guide, online booking calendar |
+| SaaS (invoicing) | Product page, monthly/annual pricing toggle and comparison, searchable API docs with copy buttons, sign-up/log-in with password strength |
+| Blog | Home with category filter and search, article pages with reading progress, about, newsletter sign-up |
+| CRM web app | Dashboard (KPIs, chart, tasks), searchable/sortable contacts, drag-and-drop pipeline, contact records with activity log |
+
+They use sample businesses and fictional data. Forms, bookings, carts and checkouts work in the browser but send nothing and take no payments; CRM and cart data stay in the visitor's browser storage. Replace or hide them from `/admin` → Showcase sites when you have authorised client work. Preview images are screenshots of the concepts; the remaining images are local generated artwork with no runtime stock-image requests.
 
 Virtualmin copy is based on its [official feature list](https://github.com/virtualmin/virtualmin-gpl#virtualmin) and your supplied LEMP Pro infrastructure. Feature access, configuration and backup retention are plan-dependent. No unsupported uptime SLA, unlimited resources or backup guarantees are advertised.
 

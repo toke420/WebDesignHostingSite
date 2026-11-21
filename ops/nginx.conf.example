@@ -1,8 +1,50 @@
 # Merge into the HTTPS server block managed by Virtualmin for webtechpros.net.
 # Point the domain's document root at the built dist/ directory.
-# Helpdesk must run persistently on 127.0.0.1:8080 (see README).
+# Helpdesk must run persistently on 127.0.0.1:8080 and the content server on
+# 127.0.0.1:8090 (see README).
 location / {
     try_files $uri $uri/ /index.html;
+}
+# Website editor. The page itself is static; it talks to the content server below.
+location = /admin {
+    return 301 /admin/;
+}
+location /admin/ {
+    try_files $uri /admin/index.html;
+    add_header X-Frame-Options SAMEORIGIN always;
+    add_header X-Robots-Tag "noindex, nofollow" always;
+    add_header Cache-Control "no-cache" always;
+}
+# Content server (Node, 127.0.0.1:8090): live content, admin API and uploaded images.
+location = /api/content {
+    proxy_pass http://127.0.0.1:8090;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
+location /api/admin/ {
+    proxy_pass http://127.0.0.1:8090;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    client_max_body_size 9m;
+}
+location = /sitemap.xml {
+    proxy_pass http://127.0.0.1:8090;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
+location = /blog/rss.xml {
+    proxy_pass http://127.0.0.1:8090;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
+location /uploads/ {
+    proxy_pass http://127.0.0.1:8090;
+    proxy_set_header Host $host;
+}
+# Example concept sites are static; keep them out of search results.
+location /examples/ {
+    add_header X-Robots-Tag "noindex" always;
 }
 location = /widget.js {
     proxy_pass http://127.0.0.1:8080;

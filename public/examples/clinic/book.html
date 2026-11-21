@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Book online | Peak Physio &amp; Pilates · WebTechPros concept</title>
+<meta name="description" content="Physiotherapy, Clinical Pilates and massage in Hawthorn.">
+<link rel="stylesheet" href="../shared/concept.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body class="clinic page-book">
+<div class="concept-bar"><span>WebTechPros design concept · sample business and data</span><a href="/#projects">← Back to WebTechPros</a></div>
+<header class="site-header"><div class="wrap head">
+<a class="logo" href="index.html"><svg viewBox="0 0 40 40" width="34" height="34" aria-hidden="true"><path d="M4 32 L16 12 L22 22 L27 15 L36 32 Z" fill="currentColor"/></svg>Peak<span>Physio &amp; Pilates</span></a>
+<button class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav">☰</button>
+<nav id="nav" class="site-nav" aria-label="Main"><a href="index.html">Home</a><a href="treatments.html">Treatments</a><a href="team.html">Practitioners</a><a href="new-patients.html">New patients</a></nav>
+<a class="btn hide-sm" href="book.html">Book online</a>
+</div></header>
+<main id="main">
+<section class="page-head wrap"><h1>Book online</h1><p class="lead">Choose a treatment, practitioner and time. It takes under a minute.</p></section>
+<section class="wrap section-sm booking">
+<form id="book" novalidate>
+<div class="step"><h2><span>1</span> Treatment</h2><select name="treatment" id="treatment" aria-label="Treatment"><option value="physio">Physiotherapy: Initial assessment (60 min, $115)</option><option value="physio-f">Physiotherapy: Follow-up (30 min, $89)</option><option value="sports">Sports injury: Sports assessment (45 min, $105)</option><option value="pilates">Clinical Pilates: 1:1 session (55 min, $95)</option><option value="pilates-g">Clinical Pilates: Small group (max 4) (55 min, $42)</option><option value="massage">Remedial massage: Remedial massage (60 min, $110)</option><option value="dry">Dry needling: Add-on (15 min, $25)</option></select></div>
+<div class="step"><h2><span>2</span> Practitioner</h2><div id="pracs" class="pracs" role="radiogroup" aria-label="Practitioner"></div></div>
+<div class="step"><h2><span>3</span> Day &amp; time</h2><div class="cal" id="days" role="group" aria-label="Day"></div><div class="times" id="times" role="group" aria-label="Time"></div></div>
+<div class="step"><h2><span>4</span> Your details</h2><div class="grid2"><label>First name<input name="first" required autocomplete="given-name"></label><label>Last name<input name="last" required autocomplete="family-name"></label><label>Mobile<input name="phone" type="tel" required autocomplete="tel"></label><label>Email<input name="email" type="email" required autocomplete="email"></label></div>
+<label>Reason for visit<input name="reason" id="reason" placeholder="e.g. lower back pain"></label><label class="inline"><input type="checkbox" required> I've read the cancellation policy (24 hours' notice)</label></div>
+<p class="err" id="book-err" role="alert"></p>
+</form>
+<aside class="summary" aria-live="polite"><h2>Your appointment</h2><dl id="summary"></dl><button class="btn wide" form="book" type="submit">Confirm booking</button></aside>
+</section>
+<section class="wrap section-sm confirmed" id="confirmed" hidden tabindex="-1"><div class="tick" aria-hidden="true">✓</div><h2>You're booked in</h2><p id="confirm-text"></p><p>In a real site you'd receive an SMS and email confirmation with a link to your intake form.</p><a class="btn soft" href="index.html">Back to home</a></section>
+</main>
+<footer class="site-footer"><div class="wrap foot">
+<div><strong>Peak Physio &amp; Pilates</strong><p>2/88 Glenferrie Road, Hawthorn VIC 3122<br>(03) 9000 7788 · care@peakphysio.example</p></div>
+<div><strong>Hours</strong><p>Mon–Fri 7am–8pm<br>Saturday 8am–1pm</p></div>
+<div><strong>Health funds</strong><p>HICAPS on the spot claims · NDIS · WorkSafe · TAC · DVA</p></div>
+</div><p class="wrap fine">Design concept for a sample clinic. No appointments are booked and no health information is stored.</p></footer>
+<script src="../shared/concept.js"></script>
+<script src="site.js"></script>
+</body>
+</html>

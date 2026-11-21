@@ -1,0 +1,579 @@
+{
+  "version": 1,
+  "brand": {
+    "name": "WebTechPros",
+    "domain": "webtechpros.net",
+    "tagline": "Good design. Solid hosting. Real support.",
+    "eyebrow": "YOUR IDEAS. OUR EXPERTISE.",
+    "headline": [
+      "Your next move.",
+      "Made digital."
+    ],
+    "intro": "Custom websites, reliable hosting and real IT support. Everything your business needs to make its next move.",
+    "consultationMinutes": 30,
+    "email": "",
+    "phone": "",
+    "footerNote": "Built for your next move."
+  },
+  "seo": {
+    "title": "WebTechPros | Good design. Solid hosting. Real support.",
+    "description": "WebTechPros: custom web design, Australian web hosting, hosted email, IT support and cloud phone systems. Start with a free 30-minute consultation."
+  },
+  "settings": {
+    "announcement": {
+      "enabled": false,
+      "text": "",
+      "link": ""
+    },
+    "showChat": true
+  },
+  "sections": {
+    "services": {
+      "kicker": "THE RIGHT TOOLS. THE RIGHT PEOPLE.",
+      "heading": "Your business,",
+      "headingMuted": "connected.",
+      "aside": "One team. From idea to online."
+    },
+    "projects": {
+      "heading": "Different ideas.",
+      "headingMuted": "Same attention to detail.",
+      "intro": "Restaurants, trades, clinics, online stores, software and more. Open any concept and click around: every page works, so you can see what your next project could do.",
+      "disclaimer": "Illustrative design concepts with sample data, not client case studies. Your project will be designed around your own business."
+    },
+    "about": {
+      "eyebrow": "LOCAL KNOW-HOW. GLOBAL REACH.",
+      "heading": "Close to your customers.",
+      "headingMuted": "Closer to your business.",
+      "body": "Australian expertise, with hosting in Melbourne, Sydney, the US and the UK. We help put your website closer to the people who use it.",
+      "locations": [
+        "Melbourne",
+        "Sydney",
+        "United States",
+        "United Kingdom"
+      ],
+      "benefits": [
+        {
+          "title": "A solid foundation",
+          "body": "Virtualmin Pro on LEMP. Nginx, PHP and database tools for a capable, flexible hosting platform."
+        },
+        {
+          "title": "The essentials, considered",
+          "body": "SSL included. Domain, DNS, SFTP and backup options configured to suit your plan."
+        },
+        {
+          "title": "Real people. Clear answers.",
+          "body": "Talk directly with a team that can connect the dots across your website, email, network and phones."
+        }
+      ]
+    },
+    "process": {
+      "heading": "From “what if”",
+      "headingMuted": "to what’s next.",
+      "steps": [
+        {
+          "title": "Let’s understand it.",
+          "body": "A free 30-minute consultation to talk about your business, your ideas and what you actually need."
+        },
+        {
+          "title": "Make a clear plan.",
+          "body": "We agree on features, scope and a quote. You know what’s included before we get to work."
+        },
+        {
+          "title": "Build. Launch. Support.",
+          "body": "Bring the project to life, get it online, and keep the right technical support within reach."
+        }
+      ]
+    },
+    "faq": {
+      "heading": "Good questions.",
+      "headingMuted": "Straight answers.",
+      "intro": "Still figuring things out? That’s what the consultation is for."
+    },
+    "cta": {
+      "label": "30 MINUTES. ZERO PRESSURE.",
+      "heading": "Let’s talk about your next move.",
+      "body": "Bring the idea. We’ll help you work out the rest.",
+      "button": "Free consultation"
+    }
+  },
+  "services": [
+    {
+      "id": "hosting",
+      "title": "Web hosting",
+      "heading": "A good home for your next big thing.",
+      "description": "From your first launch to your next chapter. Straightforward hosting, with a real team behind it.",
+      "plans": [
+        {
+          "name": "Starter",
+          "price": 10,
+          "unit": "/ month",
+          "description": "For startups, side projects and fresh ideas.",
+          "features": [
+            "SSL certificate included",
+            "Up to 5 GB storage",
+            "250 GB bandwidth / month",
+            "3-page website deployment",
+            "Or 60+ one-click web applications"
+          ]
+        },
+        {
+          "name": "Standard",
+          "price": 20,
+          "unit": "/ month",
+          "description": "More room for a growing business.",
+          "featured": true,
+          "label": "ROOM TO GROW",
+          "features": [
+            "SSL certificate included",
+            "Up to 10 GB storage",
+            "350 GB bandwidth / month",
+            "7-page website deployment",
+            "Or 60+ one-click web applications"
+          ]
+        },
+        {
+          "name": "Pro",
+          "price": null,
+          "unit": "",
+          "description": "For bigger websites and bigger ambitions.",
+          "features": [
+            "SSL certificate included",
+            "Up to 30 GB storage",
+            "700 GB bandwidth / month",
+            "Up to 10-page website deployment",
+            "Or 60+ one-click web applications"
+          ]
+        }
+      ],
+      "note": "Hosting prices are starting rates in AUD. Website design is quoted separately from deployment. Your consultation confirms scope, availability and any applicable tax."
+    },
+    {
+      "id": "design",
+      "title": "Web & logo design",
+      "heading": "Built around you. Never off the shelf.",
+      "description": "Custom website design and implementation that turns your ideas into a distinctive online presence.",
+      "plans": [
+        {
+          "name": "Package 1",
+          "price": 50,
+          "unit": "one-off",
+          "description": "A starting point for your online presence.",
+          "features": [
+            "Custom website design",
+            "Website implementation",
+            "Scope agreed during consultation"
+          ]
+        },
+        {
+          "name": "Package 2",
+          "price": 150,
+          "unit": "one-off",
+          "description": "A complete design and implementation package.",
+          "featured": true,
+          "label": "YOUR NEXT CHAPTER",
+          "features": [
+            "Complete website design",
+            "Website implementation",
+            "Scope agreed during consultation"
+          ]
+        },
+        {
+          "name": "Package 3",
+          "price": 500,
+          "unit": "one-off",
+          "description": "Our third complete website package.",
+          "features": [
+            "Complete website design",
+            "Website implementation",
+            "Scope agreed during consultation"
+          ]
+        }
+      ],
+      "note": "All design prices are starting rates in AUD. Page counts, functionality, revisions, content and ongoing hosting are confirmed in your individual quote."
+    },
+    {
+      "id": "email",
+      "title": "Hosted email",
+      "heading": "Your business. In every inbox.",
+      "description": "Professional hosted IMAP email, with shared and private options. No lock-in contracts.",
+      "plans": [
+        {
+          "name": "Basic Email",
+          "price": 6,
+          "unit": "/ seat / month",
+          "description": "Option 1: a dependable shared mail platform.",
+          "features": [
+            "10 GB cloud storage",
+            "IMAP mail access",
+            "CalDAV calendar integration",
+            "Spam filtering & antivirus",
+            "No lock-in contracts"
+          ]
+        },
+        {
+          "name": "Pro Email",
+          "price": 60,
+          "unit": "/ 5 seats / month",
+          "description": "Option 2: email on a private virtual server.",
+          "featured": true,
+          "label": "YOUR OWN PLATFORM",
+          "features": [
+            "60 GB cloud storage",
+            "Private virtual server platform",
+            "IMAP & CalDAV calendar integration",
+            "Spam filtering & antivirus",
+            "No lock-in contracts"
+          ]
+        }
+      ],
+      "note": "Prices in AUD. Storage allocation, additional seats, migration requirements and any applicable tax are confirmed in your quote."
+    },
+    {
+      "id": "support",
+      "title": "IT support",
+      "heading": "Less troubleshooting. More getting on.",
+      "description": "Practical help for everyday devices, business servers and the networks connecting them.",
+      "plans": [
+        {
+          "name": "Everyday IT",
+          "price": 110,
+          "unit": "/ hour",
+          "description": "Help with the technology you use every day.",
+          "features": [
+            "PC & desktop support",
+            "Laptop troubleshooting",
+            "Discuss your issue with a real person"
+          ]
+        },
+        {
+          "name": "Servers & infrastructure",
+          "price": 150,
+          "unit": "/ hour",
+          "description": "Technical support for your business backbone.",
+          "featured": true,
+          "label": "BUSINESS BACKBONE",
+          "features": [
+            "Server support",
+            "Infrastructure troubleshooting",
+            "MikroTik networking included"
+          ]
+        }
+      ],
+      "note": "Server and infrastructure support starts at $150 AUD per hour. Scope, access requirements, minimum charges and any applicable tax are agreed before work starts."
+    },
+    {
+      "id": "telephony",
+      "title": "IP telephony",
+      "heading": "Good conversations start here.",
+      "description": "Hosted business phone systems tailored to the way your team works, wherever they work.",
+      "plans": [
+        {
+          "name": "Hosted 3CX",
+          "price": null,
+          "unit": "",
+          "description": "A 3CX solution planned around your business.",
+          "features": [
+            "Hosted phone system",
+            "Discuss users, call flows & features",
+            "Hosting and setup quoted to scope"
+          ]
+        },
+        {
+          "name": "Hosted FreePBX",
+          "price": null,
+          "unit": "",
+          "description": "A flexible FreePBX-based hosted solution.",
+          "featured": true,
+          "label": "BUILT AROUND YOUR TEAM",
+          "features": [
+            "Hosted phone system",
+            "Discuss extensions & integrations",
+            "Hosting and setup quoted to scope"
+          ]
+        }
+      ],
+      "note": "Telephony packages are quoted after consultation. We confirm licensing, call plans, handsets, number porting and requested features in your proposal."
+    }
+  ],
+  "logoPackage": {
+    "price": 110,
+    "title": "A logo that feels like you.",
+    "description": "Custom logo design, a pack of common sizes for your web presence, and up to 30 minutes of consulting to understand your vision."
+  },
+  "projects": [
+    {
+      "id": "business",
+      "type": "Business website",
+      "name": "A stronger first impression.",
+      "description": "A professional services firm with service pages, team profiles and a validated enquiry form.",
+      "image": "/images/project-business.webp",
+      "url": "/examples/business/",
+      "visible": true
+    },
+    {
+      "id": "store",
+      "type": "Ecommerce store",
+      "name": "From browsing to buying.",
+      "description": "A product catalogue with filters, product pages, a working cart and a checkout flow.",
+      "image": "/images/project-store.webp",
+      "url": "/examples/store/",
+      "visible": true
+    },
+    {
+      "id": "restaurant",
+      "type": "Restaurant & hospitality",
+      "name": "A table worth booking.",
+      "description": "A tabbed menu, dietary filters, a reservation form with time slots, and opening hours.",
+      "image": "/images/project-restaurant.webp",
+      "url": "/examples/restaurant/",
+      "visible": true
+    },
+    {
+      "id": "trades",
+      "type": "Trades & services",
+      "name": "The call-out, sorted.",
+      "description": "A tradie site with service areas, reviews and a step-by-step quote request.",
+      "image": "/images/project-trades.webp",
+      "url": "/examples/trades/",
+      "visible": true
+    },
+    {
+      "id": "clinic",
+      "type": "Health clinic",
+      "name": "Care that's easy to book.",
+      "description": "Treatments, practitioner profiles and an online booking calendar with available times.",
+      "image": "/images/project-clinic.webp",
+      "url": "/examples/clinic/",
+      "visible": true
+    },
+    {
+      "id": "saas",
+      "type": "Software & SaaS",
+      "name": "Launch-ready from day one.",
+      "description": "A product landing page with a monthly/annual pricing toggle, docs and a sign-up flow.",
+      "image": "/images/project-saas.webp",
+      "url": "/examples/saas/",
+      "visible": true
+    },
+    {
+      "id": "blog",
+      "type": "Blog & publication",
+      "name": "Ideas worth spending time with.",
+      "description": "An editorial site with category filters, full article pages, search and a newsletter sign-up.",
+      "image": "/images/project-blog.webp",
+      "url": "/examples/blog/",
+      "visible": true
+    },
+    {
+      "id": "crm",
+      "type": "CRM application",
+      "name": "A little less busywork.",
+      "description": "A web app with a dashboard, searchable contacts, a drag-and-drop pipeline and contact records.",
+      "image": "/images/project-crm.webp",
+      "url": "/examples/crm/",
+      "visible": true
+    }
+  ],
+  "faqs": [
+    {
+      "id": "consultation",
+      "question": "What happens in the free consultation?",
+      "answer": "<p>We spend up to 30 minutes understanding your business, your goals and the features you need. You can ask about websites, logos, hosting, email, IT support or phone systems. We then confirm a suitable scope and quote. Submitting a request starts a conversation; it does not book a calendar slot or commit you to a purchase.</p>"
+    },
+    {
+      "id": "logo-and-website",
+      "question": "Can you design my logo as well as my website?",
+      "answer": "<p>Yes. Custom logo packs start at $110 AUD and include common logo dimensions for your online presence, plus up to 30 minutes of consulting to understand your vision. Website design and implementation packages start at $50, $150 and $500 AUD. We agree on deliverables during consultation.</p>"
+    },
+    {
+      "id": "hosting-location",
+      "question": "Where will my website be hosted?",
+      "answer": "<p>We offer hosting in Melbourne and Sydney data centres, with US and UK options for international customers. We work with people around the world and help select a location close to your audience for lower latency. Availability is confirmed when we prepare your quote.</p>"
+    },
+    {
+      "id": "hosting-platform",
+      "question": "What is included in the hosting platform?",
+      "answer": "<p>Our Virtualmin Pro platform uses a LEMP stack: Linux, Nginx, MariaDB/MySQL and PHP. It supports domain and DNS management, databases, SSL certificate management, SFTP access and backup scheduling. Access, retention and individual features depend on your plan and configuration, which we confirm during consultation. Each standard hosting plan includes SSL and deployment of the stated page count, or a choice of 60+ one-click applications.</p>"
+    },
+    {
+      "id": "email-contracts",
+      "question": "Do hosted email plans have lock-in contracts?",
+      "answer": "<p>No. Both hosted IMAP email options have no lock-in contracts. Basic Email is $6 AUD per seat per month on our shared platform with 10 GB cloud storage. Pro Email is $60 AUD per five seats per month on a private virtual server with 60 GB cloud storage. Both include CalDAV calendars, spam filtering and antivirus. We confirm storage allocation and migration needs in your quote.</p>"
+    },
+    {
+      "id": "network-and-phones",
+      "question": "Can you help with our network or business phones?",
+      "answer": "<p>Yes. Server and infrastructure support, including MikroTik networking, starts at $150 AUD per hour. PC, desktop and laptop support is $110 AUD per hour. We also offer hosted 3CX and FreePBX phone systems, quoted after discussing your users and the features you need.</p>"
+    }
+  ],
+  "pages": [
+    {
+      "id": "p-web-hosting",
+      "slug": "web-hosting",
+      "title": "Australian web hosting",
+      "visible": true,
+      "description": "Web hosting in Melbourne and Sydney with SSL included, Virtualmin Pro on LEMP and real support. Starter and Standard plans from $10 AUD a month.",
+      "blocks": [
+        {
+          "id": "b1",
+          "type": "hero",
+          "anchor": "",
+          "eyebrow": "WEB HOSTING",
+          "heading": "A good home for your next big thing.",
+          "text": "From your first launch to your next chapter. Straightforward hosting, with a real team behind it.",
+          "buttonLabel": "See hosting plans",
+          "buttonLink": "#plans",
+          "image": "/images/hero-sculpture.webp"
+        },
+        {
+          "id": "b2",
+          "type": "cards",
+          "anchor": "included",
+          "heading": "What every plan includes",
+          "items": [
+            {
+              "title": "SSL included",
+              "text": "Every hosting plan includes an SSL certificate, so your site loads securely over HTTPS.",
+              "link": ""
+            },
+            {
+              "title": "Close to your customers",
+              "text": "Hosting in Melbourne and Sydney, with US and UK options for international audiences.",
+              "link": "/#faq-hosting-location"
+            },
+            {
+              "title": "A capable platform",
+              "text": "Virtualmin Pro on a LEMP stack: Nginx, PHP and MariaDB/MySQL, with domain, DNS and SFTP tools.",
+              "link": "/#faq-hosting-platform"
+            }
+          ]
+        },
+        {
+          "id": "b3",
+          "type": "pricing",
+          "anchor": "plans",
+          "heading": "Hosting plans",
+          "service": "hosting"
+        },
+        {
+          "id": "b4",
+          "type": "faq",
+          "anchor": "questions",
+          "heading": "Hosting questions",
+          "ids": [
+            "hosting-location",
+            "hosting-platform"
+          ]
+        },
+        {
+          "id": "b5",
+          "type": "cta",
+          "anchor": "",
+          "heading": "Not sure which plan fits?",
+          "text": "Tell us about your site and we'll recommend a plan in a free 30-minute consultation.",
+          "buttonLabel": "Free consultation",
+          "buttonLink": ""
+        }
+      ]
+    }
+  ],
+  "blog": {
+    "title": "Notes & guides",
+    "intro": "Practical advice on websites, hosting, email and IT for small businesses.",
+    "enabled": true
+  },
+  "posts": [
+    {
+      "id": "post-choose-hosting",
+      "slug": "how-to-choose-web-hosting",
+      "title": "How to choose web hosting for a small business",
+      "excerpt": "Storage, bandwidth, location and support: what actually matters when you pick a hosting plan, and what you can safely ignore.",
+      "author": "WebTechPros team",
+      "date": "2026-11-18",
+      "tags": [
+        "Hosting",
+        "Guides"
+      ],
+      "cover": "/images/hero-sculpture.webp",
+      "coverAlt": "Yellow sculptural ribbons",
+      "visible": true,
+      "featured": true,
+      "body": "<p>Hosting plans are full of numbers, but only a few of them matter for most small business websites. Here's how to read a plan without getting lost.</p><h2>1. Location matters more than you think</h2><p>The closer your server is to your visitors, the faster your pages load. If most of your customers are in Australia, Australian hosting is the simple choice. We host in <a href=\"/#faq-hosting-location\">Melbourne and Sydney, with US and UK options</a>.</p><h2>2. Storage and bandwidth: buy for the next year, not the next decade</h2><p>A typical brochure website uses well under 1 GB of storage. Online stores and sites with lots of images or downloads need more. Start with a plan that fits today and leaves room to grow; you can move up later.</p><ul><li><strong>Up to 5 GB:</strong> most small business and portfolio sites</li><li><strong>Up to 10 GB:</strong> growing sites, blogs with lots of images</li><li><strong>Up to 30 GB:</strong> larger sites and online stores</li></ul><h2>3. SSL should be included</h2><p>Browsers warn visitors about sites without HTTPS. An SSL certificate should come with the plan, not as an extra.</p><h2>4. Ask who you'll talk to when something breaks</h2><p>The cheapest plans often come with ticket queues and scripted answers. Check whether you can reach a real person who can look at your actual site.</p><blockquote>The best hosting plan is the one you never have to think about.</blockquote><p>Compare our <a href=\"/web-hosting#plans\">hosting plans</a>, or <a href=\"/#contact\">book a free consultation</a> and we'll recommend one.</p>"
+    },
+    {
+      "id": "post-consultation",
+      "slug": "what-happens-in-a-free-consultation",
+      "title": "What happens in a free website consultation?",
+      "excerpt": "Thirty minutes, no obligation. Here's what we'll ask, what you'll get, and how to make the most of it.",
+      "author": "WebTechPros team",
+      "date": "2026-11-12",
+      "tags": [
+        "Web design"
+      ],
+      "cover": "/images/project-business.webp",
+      "coverAlt": "An example business website",
+      "visible": true,
+      "featured": false,
+      "body": "<p>Our free consultation is a 30-minute conversation about your business and what you need online. It's not a sales pitch, and it doesn't commit you to anything.</p><h2>What we'll ask</h2><ul><li>What your business does and who your customers are</li><li>What you want people to do on your website: call, book, buy or enquire</li><li>Any websites you like, and why</li><li>What you already have: domain, email, logo, hosting</li></ul><h2>What you'll get</h2><p>A clear recommendation for scope, the features you need, and a quote. See the <a href=\"/#faq-consultation\">consultation FAQ</a> for the details.</p><h2>How to prepare</h2><ol><li>Jot down three websites you like</li><li>List the pages you think you need</li><li>Think about your budget and timing</li></ol><p>Ready? <a href=\"/#contact\">Request your free consultation</a>.</p>"
+    },
+    {
+      "id": "post-refresh",
+      "slug": "five-signs-your-website-needs-a-refresh",
+      "title": "Five signs your website needs a refresh",
+      "excerpt": "If your site is hard to use on a phone or you're embarrassed to share the link, it's probably time.",
+      "author": "WebTechPros team",
+      "date": "2026-11-05",
+      "tags": [
+        "Web design",
+        "Guides"
+      ],
+      "cover": "/images/project-restaurant.webp",
+      "coverAlt": "An example restaurant website",
+      "visible": true,
+      "featured": false,
+      "body": "<p>Websites age faster than most businesses do. Here are five signs yours is due for an update.</p><h2>1. It's hard to use on a phone</h2><p>Most visitors arrive on mobile. If they have to pinch and zoom, they'll leave.</p><h2>2. Customers can't find the basics</h2><p>Opening hours, prices, a phone number and how to book should be one tap away.</p><h2>3. It's slow</h2><p>Every extra second of loading costs visitors. Modern hosting and lighter pages help.</p><h2>4. You can't update it yourself</h2><p>If changing a price means emailing a developer, your site will always be out of date.</p><h2>5. You're embarrassed to share the link</h2><p>Your website is often the first impression. It should make you proud.</p><p>See <a href=\"/#projects\">what we build</a>, including working examples for <a href=\"/examples/restaurant/\">restaurants</a>, <a href=\"/examples/trades/\">trades</a> and <a href=\"/examples/clinic/\">clinics</a>.</p>"
+    }
+  ],
+  "menus": {
+    "header": [
+      {
+        "label": "Our services",
+        "href": "/#services"
+      },
+      {
+        "label": "What we build",
+        "href": "/#projects"
+      },
+      {
+        "label": "Why WebTechPros",
+        "href": "/#about"
+      },
+      {
+        "label": "Blog",
+        "href": "/blog"
+      },
+      {
+        "label": "FAQs",
+        "href": "/#faq"
+      }
+    ],
+    "footer": [
+      {
+        "label": "Our services",
+        "href": "/#services"
+      },
+      {
+        "label": "Web hosting",
+        "href": "/web-hosting"
+      },
+      {
+        "label": "What we build",
+        "href": "/#projects"
+      },
+      {
+        "label": "Blog",
+        "href": "/blog"
+      }
+    ]
+  }
+}

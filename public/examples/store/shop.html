@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Shop all | Offbeat Audio · WebTechPros concept</title>
+<meta name="description" content="Headphones and speakers designed for everyday listening.">
+<link rel="stylesheet" href="../shared/concept.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body class="store page-shop">
+<div class="concept-bar"><span>WebTechPros design concept · sample business and data</span><a href="/#projects">← Back to WebTechPros</a></div>
+<header class="site-header"><div class="wrap head">
+<a class="logo" href="index.html">offbeat<sup>®</sup></a>
+<button class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav">☰</button>
+<nav id="nav" class="site-nav" aria-label="Main"><a href="index.html">Home</a><a href="shop.html" aria-current="page">Shop</a><a href="about.html">Our story</a></nav>
+<a class="cart-link" href="cart.html" aria-label="Cart">Cart <span class="cart-count" aria-live="polite">0</span></a>
+</div></header>
+<main id="main">
+<section class="wrap shop-head"><h1>Shop all</h1><p class="lead" id="result-count"></p></section>
+<section class="wrap shop">
+  <aside class="filters" aria-label="Filters">
+    <fieldset><legend>Category</legend>
+      <label><input type="radio" name="cat" value="all" checked> All</label>
+      <label><input type="radio" name="cat" value="headphones"> Headphones</label>
+      <label><input type="radio" name="cat" value="earbuds"> Earbuds</label>
+      <label><input type="radio" name="cat" value="speakers"> Speakers</label>
+    </fieldset>
+    <fieldset><legend>Max price</legend><input type="range" id="max-price" min="50" max="500" step="10" value="500" aria-describedby="max-label"><output id="max-label">$500</output></fieldset>
+    <label class="check"><input type="checkbox" id="in-stock"> In stock only</label>
+  </aside>
+  <div><div class="toolbar"><label>Sort by <select id="sort"><option value="popular">Most popular</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option><option value="new">Newest</option></select></label></div>
+  <div class="grid" data-products="all"></div><p class="empty" hidden>No products match. Try widening the filters.</p></div>
+</section>
+</main>
+<footer class="site-footer"><div class="wrap foot">
+<p class="logo">offbeat<sup>®</sup></p>
+<div><strong>Shop</strong><a href="shop.html?cat=headphones">Headphones</a><a href="shop.html?cat=earbuds">Earbuds</a><a href="shop.html?cat=speakers">Speakers</a></div>
+<div><strong>Help</strong><a href="about.html#shipping">Shipping</a><a href="about.html#returns">Returns</a><a href="about.html">Our story</a></div>
+<form class="mini-sub" onsubmit="event.preventDefault();concept.toast('Thanks! You’re on the list.');this.reset()"><label for="sub">Get 10% off your first order</label><div><input id="sub" type="email" required placeholder="you@email.com"><button>Join</button></div></form>
+</div><p class="wrap fine">Design concept. No products are for sale and no payments are taken.</p></footer>
+<script src="../shared/concept.js"></script>
+<script src="site.js"></script>
+</body>
+</html>

@@ -6,8 +6,13 @@
   "scripts": {
     "dev": "node scripts/dev.mjs",
     "dev:site": "vite --host 0.0.0.0",
+    "content": "node server/content-server.mjs",
+    "start": "STATIC_DIR=dist node server/content-server.mjs",
+    "admin:password": "node server/content-server.mjs set-password",
     "setup:helpdesk": "node scripts/setup-helpdesk.mjs",
     "build": "tsc -b && vite build",
+    "build:examples": "node scripts/examples/build.mjs",
+    "build:logo": "node scripts/brand/build-logo-pack.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "test": "playwright test"
   },

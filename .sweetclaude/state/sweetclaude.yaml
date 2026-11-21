@@ -1,6 +1,7 @@
 schema_version: 2
 project:
   name: webtechpros.net
+  name: WebTechPros
   type: existing-code
   version_stage: GA
   mode: null
@@ -75,6 +76,44 @@ features:
     status: active
     offered_at: null
     decided_at: '2026-11-21T06:43:56+00:00'
+    status: declined
+    offered_at: null
+    decided_at: '2026-11-19T15:51:58+00:00'
+    defer_until: null
+  product_backlog:
+    status: declined
+    offered_at: null
+    decided_at: '2026-11-19T15:51:58+00:00'
+    defer_until: null
+  product_personas:
+    status: declined
+    offered_at: null
+    decided_at: '2026-11-19T15:51:58+00:00'
+    defer_until: null
+  product_stories:
+    status: declined
+    offered_at: null
+    decided_at: '2026-11-19T15:51:58+00:00'
+    defer_until: null
+  document_corpus:
+    status: declined
+    offered_at: null
+    decided_at: '2026-11-19T15:51:58+00:00'
+    defer_until: null
+  usage_tracking:
+    status: declined
+    offered_at: null
+    decided_at: '2026-11-19T15:51:58+00:00'
+    defer_until: null
+  behavioral_regression:
+    status: declined
+    offered_at: null
+    decided_at: '2026-11-19T15:51:58+00:00'
+    defer_until: null
+  work_item_artifacts:
+    status: declined
+    offered_at: null
+    decided_at: '2026-11-19T15:51:58+00:00'
     defer_until: null
 health:
   last_checked: null

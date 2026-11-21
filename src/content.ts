@@ -1,13 +1,8 @@
-// Edit service descriptions, prices and FAQs here. Prices are in AUD.
-// A null price deliberately displays "Request a quote" rather than inventing a price.
-export const brand = {
-  name: "WebTechPros",
-  domain: "webtechpros.net",
-  consultationMinutes: 30,
-  headline: ["Your next move.", "Made digital."],
-  intro:
-    "Custom websites, reliable hosting and real IT support. Everything your business needs to make its next move.",
-};
+// Site content model. The live copy is edited at /admin and served by the
+// content server (/api/content). content/default-content.json is the fallback
+// used before anything is published, or if the content server is unreachable.
+// A null price displays "Request a quote" rather than inventing a price.
+import defaults from "../content/default-content.json";
 
 export type ServiceId =
   "design" | "hosting" | "email" | "support" | "telephony";
@@ -28,283 +23,222 @@ export type Service = {
   plans: Plan[];
   note: string;
 };
+export type Project = {
+  id: string;
+  type: string;
+  name: string;
+  description: string;
+  image: string;
+  url: string;
+  visible: boolean;
+};
+export type Faq = { id: string; question: string; answer: string };
+type Block = { title: string; body: string };
 
-export const services: Service[] = [
-  {
-    id: "hosting",
-    title: "Web hosting",
-    heading: "A good home for your next big thing.",
-    description:
-      "From your first launch to your next chapter. Straightforward hosting, with a real team behind it.",
-    plans: [
-      {
-        name: "Starter",
-        price: 10,
-        unit: "/ month",
-        description: "For startups, side projects and fresh ideas.",
-        features: [
-          "SSL certificate included",
-          "Up to 5 GB storage",
-          "250 GB bandwidth / month",
-          "3-page website deployment",
-          "Or 60+ one-click web applications",
-        ],
-      },
-      {
-        name: "Standard",
-        price: 20,
-        unit: "/ month",
-        description: "More room for a growing business.",
-        featured: true,
-        label: "ROOM TO GROW",
-        features: [
-          "SSL certificate included",
-          "Up to 10 GB storage",
-          "350 GB bandwidth / month",
-          "7-page website deployment",
-          "Or 60+ one-click web applications",
-        ],
-      },
-      {
-        name: "Pro",
-        price: null,
-        unit: "",
-        description: "For bigger websites and bigger ambitions.",
-        features: [
-          "SSL certificate included",
-          "Up to 30 GB storage",
-          "700 GB bandwidth / month",
-          "Up to 10-page website deployment",
-          "Or 60+ one-click web applications",
-        ],
-      },
-    ],
-    note: "Hosting prices are starting rates in AUD. Website design is quoted separately from deployment. Your consultation confirms scope, availability and any applicable tax.",
-  },
-  {
-    id: "design",
-    title: "Web & logo design",
-    heading: "Built around you. Never off the shelf.",
-    description:
-      "Custom website design and implementation that turns your ideas into a distinctive online presence.",
-    plans: [
-      {
-        name: "Package 1",
-        price: 50,
-        unit: "one-off",
-        description: "A starting point for your online presence.",
-        features: [
-          "Custom website design",
-          "Website implementation",
-          "Scope agreed during consultation",
-        ],
-      },
-      {
-        name: "Package 2",
-        price: 150,
-        unit: "one-off",
-        description: "A complete design and implementation package.",
-        featured: true,
-        label: "YOUR NEXT CHAPTER",
-        features: [
-          "Complete website design",
-          "Website implementation",
-          "Scope agreed during consultation",
-        ],
-      },
-      {
-        name: "Package 3",
-        price: 500,
-        unit: "one-off",
-        description: "Our third complete website package.",
-        features: [
-          "Complete website design",
-          "Website implementation",
-          "Scope agreed during consultation",
-        ],
-      },
-    ],
-    note: "All design prices are starting rates in AUD. Page counts, functionality, revisions, content and ongoing hosting are confirmed in your individual quote.",
-  },
-  {
-    id: "email",
-    title: "Hosted email",
-    heading: "Your business. In every inbox.",
-    description:
-      "Professional hosted IMAP email, with shared and private options. No lock-in contracts.",
-    plans: [
-      {
-        name: "Basic Email",
-        price: 6,
-        unit: "/ seat / month",
-        description: "Option 1: a dependable shared mail platform.",
-        features: [
-          "10 GB cloud storage",
-          "IMAP mail access",
-          "CalDAV calendar integration",
-          "Spam filtering & antivirus",
-          "No lock-in contracts",
-        ],
-      },
-      {
-        name: "Pro Email",
-        price: 60,
-        unit: "/ 5 seats / month",
-        description: "Option 2: email on a private virtual server.",
-        featured: true,
-        label: "YOUR OWN PLATFORM",
-        features: [
-          "60 GB cloud storage",
-          "Private virtual server platform",
-          "IMAP & CalDAV calendar integration",
-          "Spam filtering & antivirus",
-          "No lock-in contracts",
-        ],
-      },
-    ],
-    note: "Prices in AUD. Storage allocation, additional seats, migration requirements and any applicable tax are confirmed in your quote.",
-  },
-  {
-    id: "support",
-    title: "IT support",
-    heading: "Less troubleshooting. More getting on.",
-    description:
-      "Practical help for everyday devices, business servers and the networks connecting them.",
-    plans: [
-      {
-        name: "Everyday IT",
-        price: 110,
-        unit: "/ hour",
-        description: "Help with the technology you use every day.",
-        features: [
-          "PC & desktop support",
-          "Laptop troubleshooting",
-          "Discuss your issue with a real person",
-        ],
-      },
-      {
-        name: "Servers & infrastructure",
-        price: 150,
-        unit: "/ hour",
-        description: "Technical support for your business backbone.",
-        featured: true,
-        label: "BUSINESS BACKBONE",
-        features: [
-          "Server support",
-          "Infrastructure troubleshooting",
-          "MikroTik networking included",
-        ],
-      },
-    ],
-    note: "Server and infrastructure support starts at $150 AUD per hour. Scope, access requirements, minimum charges and any applicable tax are agreed before work starts.",
-  },
-  {
-    id: "telephony",
-    title: "IP telephony",
-    heading: "Good conversations start here.",
-    description:
-      "Hosted business phone systems tailored to the way your team works, wherever they work.",
-    plans: [
-      {
-        name: "Hosted 3CX",
-        price: null,
-        unit: "",
-        description: "A 3CX solution planned around your business.",
-        features: [
-          "Hosted phone system",
-          "Discuss users, call flows & features",
-          "Hosting and setup quoted to scope",
-        ],
-      },
-      {
-        name: "Hosted FreePBX",
-        price: null,
-        unit: "",
-        description: "A flexible FreePBX-based hosted solution.",
-        featured: true,
-        label: "BUILT AROUND YOUR TEAM",
-        features: [
-          "Hosted phone system",
-          "Discuss extensions & integrations",
-          "Hosting and setup quoted to scope",
-        ],
-      },
-    ],
-    note: "Telephony packages are quoted after consultation. We confirm licensing, call plans, handsets, number porting and requested features in your proposal.",
-  },
-];
-
-export const logoPackage = {
-  price: 110,
-  title: "A logo that feels like you.",
-  description:
-    "Custom logo design, a pack of common sizes for your web presence, and up to 30 minutes of consulting to understand your vision.",
+export type MenuItem = { label: string; href: string };
+type BlockBase = { id: string; anchor: string };
+export type PageBlock = BlockBase &
+  (
+    | {
+        type: "hero";
+        eyebrow: string;
+        heading: string;
+        text: string;
+        buttonLabel: string;
+        buttonLink: string;
+        image: string;
+      }
+    | { type: "heading"; text: string; level: 2 | 3 }
+    | { type: "text"; html: string }
+    | {
+        type: "image";
+        src: string;
+        alt: string;
+        caption: string;
+        wide: boolean;
+      }
+    | {
+        type: "button";
+        label: string;
+        link: string;
+        style: "primary" | "outline";
+      }
+    | {
+        type: "cards";
+        heading: string;
+        items: { title: string; text: string; link: string }[];
+      }
+    | { type: "quote"; text: string; cite: string }
+    | { type: "pricing"; heading: string; service: ServiceId }
+    | { type: "faq"; heading: string; ids: string[] }
+    | {
+        type: "cta";
+        heading: string;
+        text: string;
+        buttonLabel: string;
+        buttonLink: string;
+      }
+    | { type: "posts"; heading: string; count: number; tag: string }
+    | { type: "divider" }
+  );
+export type BlockType = PageBlock["type"];
+export type Page = {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  visible: boolean;
+  blocks: PageBlock[];
+};
+export type Post = {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  author: string;
+  date: string;
+  tags: string[];
+  cover: string;
+  coverAlt: string;
+  body: string;
+  visible: boolean;
+  featured: boolean;
 };
 
-export const projects = [
-  {
-    id: "business",
-    name: "A stronger first impression.",
-    type: "Business website",
-    image: "/images/project-business.webp",
-    description:
-      "A clear, confident home for a local business, with services that are easy to find.",
-  },
-  {
-    id: "store",
-    name: "From browsing to buying.",
-    type: "Ecommerce store",
-    image: "/images/project-store.webp",
-    description:
-      "An expressive shopfront that puts the products, and the shopping experience, first.",
-  },
-  {
-    id: "blog",
-    name: "Ideas worth spending time with.",
-    type: "Blog & publication",
-    image: "/images/project-blog.webp",
-    description:
-      "An editorial space built for stories, discoveries and a growing audience.",
-  },
-  {
-    id: "crm",
-    name: "A little less busywork.",
-    type: "CRM application",
-    image: "/images/project-crm.webp",
-    description:
-      "A focused workspace for contacts, opportunities and keeping the next step in sight.",
-  },
-];
+export type SiteContent = {
+  version: number;
+  brand: {
+    name: string;
+    domain: string;
+    tagline: string;
+    eyebrow: string;
+    headline: string[];
+    intro: string;
+    consultationMinutes: number;
+    email: string;
+    phone: string;
+    footerNote: string;
+  };
+  seo: { title: string; description: string };
+  settings: {
+    announcement: { enabled: boolean; text: string; link: string };
+    showChat: boolean;
+  };
+  sections: {
+    services: {
+      kicker: string;
+      heading: string;
+      headingMuted: string;
+      aside: string;
+    };
+    projects: {
+      heading: string;
+      headingMuted: string;
+      intro: string;
+      disclaimer: string;
+    };
+    about: {
+      eyebrow: string;
+      heading: string;
+      headingMuted: string;
+      body: string;
+      locations: string[];
+      benefits: Block[];
+    };
+    process: { heading: string; headingMuted: string; steps: Block[] };
+    faq: { heading: string; headingMuted: string; intro: string };
+    cta: { label: string; heading: string; body: string; button: string };
+  };
+  services: Service[];
+  logoPackage: { price: number | null; title: string; description: string };
+  projects: Project[];
+  faqs: Faq[];
+  pages: Page[];
+  blog: { title: string; intro: string; enabled: boolean };
+  posts: Post[];
+  menus: { header: MenuItem[]; footer: MenuItem[] };
+};
 
-export const faqs = [
-  {
-    question: "What happens in the free consultation?",
-    answer:
-      "We spend up to 30 minutes understanding your business, your goals and the features you need. You can ask about websites, logos, hosting, email, IT support or phone systems. We then confirm a suitable scope and quote. Submitting a request starts a conversation; it does not book a calendar slot or commit you to a purchase.",
-  },
-  {
-    question: "Can you design my logo as well as my website?",
-    answer:
-      "Yes. Custom logo packs start at $110 AUD and include common logo dimensions for your online presence, plus up to 30 minutes of consulting to understand your vision. Website design and implementation packages start at $50, $150 and $500 AUD. We agree on deliverables during consultation.",
-  },
-  {
-    question: "Where will my website be hosted?",
-    answer:
-      "We offer hosting in Melbourne and Sydney data centres, with US and UK options for international customers. We work with people around the world and help select a location close to your audience for lower latency. Availability is confirmed when we prepare your quote.",
-  },
-  {
-    question: "What is included in the hosting platform?",
-    answer:
-      "Our Virtualmin Pro platform uses a LEMP stack: Linux, Nginx, MariaDB/MySQL and PHP. It supports domain and DNS management, databases, SSL certificate management, SFTP access and backup scheduling. Access, retention and individual features depend on your plan and configuration, which we confirm during consultation. Each standard hosting plan includes SSL and deployment of the stated page count, or a choice of 60+ one-click applications.",
-  },
-  {
-    question: "Do hosted email plans have lock-in contracts?",
-    answer:
-      "No. Both hosted IMAP email options have no lock-in contracts. Basic Email is $6 AUD per seat per month on our shared platform with 10 GB cloud storage. Pro Email is $60 AUD per five seats per month on a private virtual server with 60 GB cloud storage. Both include CalDAV calendars, spam filtering and antivirus. We confirm storage allocation and migration needs in your quote.",
-  },
-  {
-    question: "Can you help with our network or business phones?",
-    answer:
-      "Yes. Server and infrastructure support, including MikroTik networking, starts at $150 AUD per hour. PC, desktop and laptop support is $110 AUD per hour. We also offer hosted 3CX and FreePBX phone systems, quoted after discussing your users and the features you need.",
-  },
+export const defaultContent = defaults as SiteContent;
+
+/** Loads published content, falling back to the bundled defaults. */
+export async function loadContent(): Promise<SiteContent> {
+  try {
+    const response = await fetch("/api/content", {
+      signal: AbortSignal.timeout(2500),
+      credentials: "omit",
+    });
+    if (!response.ok) throw new Error(String(response.status));
+    const data = await response.json();
+    if (!data?.services?.length) throw new Error("Empty content");
+    return data as SiteContent;
+  } catch {
+    return defaultContent;
+  }
+}
+
+export function getPath(obj: unknown, path: string): unknown {
+  return path
+    .split(".")
+    .reduce<unknown>(
+      (value, key) =>
+        value == null ? undefined : (value as Record<string, unknown>)[key],
+      obj,
+    );
+}
+
+export function setPath<T>(obj: T, path: string, value: unknown): T {
+  const keys = path.split(".");
+  const clone = (v: unknown) =>
+    Array.isArray(v) ? [...v] : { ...(v as Record<string, unknown>) };
+  const root = clone(obj) as Record<string, unknown>;
+  let cursor = root;
+  keys.forEach((key, i) => {
+    if (i === keys.length - 1) cursor[key] = value;
+    else {
+      cursor[key] = clone(cursor[key]);
+      cursor = cursor[key] as Record<string, unknown>;
+    }
+  });
+  return root as T;
+}
+
+/** URL-safe version of a name, used for page addresses and link names. */
+export function slugify(text: string) {
+  return text
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60);
+}
+
+/** Anchor for a package, e.g. "plan-hosting-standard". */
+export function planAnchor(serviceId: string, planName: string) {
+  return `plan-${serviceId}-${slugify(planName) || "package"}`;
+}
+
+export function tagSlug(tag: string) {
+  return slugify(tag);
+}
+
+export function formatDate(iso: string) {
+  return new Date(`${iso}T12:00:00`).toLocaleDateString("en-AU", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+export function formatPrice(price: number) {
+  return Number.isInteger(price) ? String(price) : price.toFixed(2);
+}
+
+export const serviceOrder: ServiceId[] = [
+  "design",
+  "hosting",
+  "email",
+  "support",
+  "telephony",
 ];
