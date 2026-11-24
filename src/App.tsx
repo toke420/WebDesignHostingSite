@@ -156,15 +156,29 @@ export default function App() {
     return () => observer.disconnect();
   }, [route.kind, path]);
 
+  // Same file name and query (e.g. Rybbit's script.js?siteId=…) means the same
+  // tracker, whether it's loaded from the analytics host or the /_r/ relay.
+  const scriptKey = (src: string) => {
+    try {
+      const u = new URL(src, window.location.href);
+      return u.pathname.split("/").pop() + u.search;
+    } catch {
+      return src;
+    }
+  };
   // Analytics/tracking scripts set in /admin → Site settings. Never loaded in
-  // the editor preview, and a script already on the page (e.g. in index.html) is never added twice.
+  // the editor preview, and a tracker already on the page (e.g. in index.html) is never added twice.
   const trackingSnippet = settings.analytics?.enabled
     ? settings.analytics.snippet
     : "";
   useEffect(() => {
     if (editing || !trackingSnippet) return;
     for (const attrs of parseTrackingScripts(trackingSnippet)) {
-      if (document.querySelector(`script[src="${CSS.escape(attrs.src)}"]`))
+      if (
+        Array.from(document.scripts).some(
+          (s) => s.src && scriptKey(s.src) === scriptKey(attrs.src),
+        )
+      )
         continue;
       const el = document.createElement("script");
       for (const [name, value] of Object.entries(attrs))
