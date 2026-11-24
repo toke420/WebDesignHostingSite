@@ -11,15 +11,16 @@ framework:
   migrated_at: null
   migrated_from: null
   migration_status: null
-  hook_last_ran: null
+  hook_last_ran: '2026-11-24T11:04:47+00:00'
   consistency:
-    last_checked: null
-    status: ok
-    drift: []
+    last_checked: '2026-11-24T11:04:47+00:00'
+    status: drift_detected
+    drift:
+    - hooks.json_missing
     check_error: null
   update:
     available: null
-    last_checked: null
+    last_checked: '2026-11-24T11:04:47+00:00'
     declined: null
     check_error: null
 session:

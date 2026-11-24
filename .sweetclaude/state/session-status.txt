@@ -3,7 +3,7 @@ WebTechPros
 
 UNFINISHED WORK
 ───────────────
-· 3 uncommitted file(s) in working tree
+· 1 uncommitted file(s) in working tree
 
 ROADMAP
 ───────
