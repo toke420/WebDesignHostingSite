@@ -157,18 +157,14 @@ export default function App() {
   }, [route.kind, path]);
 
   // Analytics/tracking scripts set in /admin → Site settings. Never loaded in
-  // the editor preview, and each script is only added once per page load.
+  // the editor preview, and a script already on the page (e.g. in index.html) is never added twice.
   const trackingSnippet = settings.analytics?.enabled
     ? settings.analytics.snippet
     : "";
   useEffect(() => {
     if (editing || !trackingSnippet) return;
     for (const attrs of parseTrackingScripts(trackingSnippet)) {
-      if (
-        document.querySelector(
-          `script[data-wtp-tracking="${CSS.escape(attrs.src)}"]`,
-        )
-      )
+      if (document.querySelector(`script[src="${CSS.escape(attrs.src)}"]`))
         continue;
       const el = document.createElement("script");
       for (const [name, value] of Object.entries(attrs))
