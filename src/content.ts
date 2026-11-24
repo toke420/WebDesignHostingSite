@@ -123,6 +123,7 @@ export type SiteContent = {
   settings: {
     announcement: { enabled: boolean; text: string; link: string };
     showChat: boolean;
+    analytics?: { enabled: boolean; snippet: string };
   };
   sections: {
     services: {

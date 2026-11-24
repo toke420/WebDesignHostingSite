@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { parseTrackingScripts } from "../../content/schema.mjs";
 import {
   ArrowSquareOutIcon,
   ClockCounterClockwiseIcon,
@@ -883,6 +884,60 @@ export function SettingsPanel({ content, update }: PanelProps) {
           onChange={(v) => update("settings.showChat", v)}
         />
       </div>
+      <AnalyticsCard content={content} update={update} />
+    </div>
+  );
+}
+
+function AnalyticsCard({
+  content,
+  update,
+}: Pick<PanelProps, "content" | "update">) {
+  const a = content.settings.analytics ?? { enabled: false, snippet: "" };
+  const scripts = parseTrackingScripts(a.snippet);
+  const ignored =
+    (a.snippet.match(/<script\b/gi) || []).length - scripts.length;
+  return (
+    <div className="card">
+      <h2>Analytics &amp; tracking</h2>
+      <p className="panel-intro">
+        Paste the tracking code from Rybbit, Plausible, Umami or similar. It
+        loads on every public page (never in this editor) once you publish.
+      </p>
+      <Toggle
+        label="Load the tracking script"
+        checked={a.enabled}
+        onChange={(v) => update("settings.analytics.enabled", v)}
+      />
+      <TextInput
+        label="Tracking code"
+        multiline
+        max={2000}
+        value={a.snippet}
+        placeholder={
+          '<script src="https://analytics.example.com/script.js" defer></script>'
+        }
+        hint={
+          'Only <script src="https://…"> tags are used. Inline code is ignored for security.'
+        }
+        onChange={(v) => update("settings.analytics.snippet", v)}
+      />
+      {a.snippet.trim() &&
+        (scripts.length ? (
+          <p className="panel-intro">
+            Will load: {scripts.map((s) => s.src).join(", ")}
+          </p>
+        ) : (
+          <p className="panel-intro" role="alert">
+            No usable script found. Paste a tag like{" "}
+            <code>{'<script src="https://…"></script>'}</code>.
+          </p>
+        ))}
+      {ignored > 0 && scripts.length > 0 && (
+        <p className="panel-intro" role="alert">
+          {ignored} script tag(s) without an https address will be ignored.
+        </p>
+      )}
     </div>
   );
 }

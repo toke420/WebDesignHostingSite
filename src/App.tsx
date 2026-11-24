@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { parseTrackingScripts } from "../content/schema.mjs";
 import {
   ArrowUpRightIcon,
   ArrowRightIcon,
@@ -154,6 +155,28 @@ export default function App() {
     document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, [route.kind, path]);
+
+  // Analytics/tracking scripts set in /admin → Site settings. Never loaded in
+  // the editor preview, and each script is only added once per page load.
+  const trackingSnippet = settings.analytics?.enabled
+    ? settings.analytics.snippet
+    : "";
+  useEffect(() => {
+    if (editing || !trackingSnippet) return;
+    for (const attrs of parseTrackingScripts(trackingSnippet)) {
+      if (
+        document.querySelector(
+          `script[data-wtp-tracking="${CSS.escape(attrs.src)}"]`,
+        )
+      )
+        continue;
+      const el = document.createElement("script");
+      for (const [name, value] of Object.entries(attrs))
+        el.setAttribute(name, value);
+      el.setAttribute("data-wtp-tracking", attrs.src);
+      document.head.appendChild(el);
+    }
+  }, [editing, trackingSnippet]);
 
   const announcement = settings.announcement;
   const ProjectTag = editing ? "div" : "button";

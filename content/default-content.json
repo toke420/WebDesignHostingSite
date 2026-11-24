@@ -25,7 +25,11 @@
       "text": "",
       "link": ""
     },
-    "showChat": true
+    "showChat": true,
+    "analytics": {
+      "enabled": true,
+      "snippet": "<script src=\"https://analytics.autismo.biz/api/script.js?siteId=58bc68785e0f\" defer></script>"
+    }
   },
   "sections": {
     "services": {

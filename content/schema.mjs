@@ -43,6 +43,44 @@ function slug(value, fallback) {
   return s || fallback;
 }
 
+// Tracking/analytics snippets: only external https scripts are accepted. Each
+// <script src="https://…"> tag is reduced to its src plus a small allow-list of
+// attributes (defer, async, crossorigin, id, data-*). Inline code is dropped.
+export function parseTrackingScripts(snippet) {
+  const out = [];
+  const tags = String(snippet || "").match(/<script\b[^>]*>/gi) || [];
+  for (const tag of tags.slice(0, 5)) {
+    const attrs = {};
+    const re =
+      /([a-zA-Z_:][-a-zA-Z0-9_:.]*)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g;
+    let m;
+    const body = tag.replace(/^<script/i, "").replace(/\/?>$/, "");
+    while ((m = re.exec(body))) {
+      const name = m[1].toLowerCase();
+      const value = m[2] ?? m[3] ?? m[4] ?? "";
+      if (name === "src") attrs.src = value.trim();
+      else if (name === "defer" || name === "async") attrs[name] = "";
+      else if (
+        (name === "crossorigin" ||
+          name === "id" ||
+          /^data-[a-z0-9-]{1,40}$/.test(name)) &&
+        value.length <= 200
+      )
+        attrs[name] = value;
+    }
+    let url;
+    try {
+      url = new URL(attrs.src || "");
+    } catch {
+      continue;
+    }
+    if (url.protocol !== "https:" || url.href.length > 500) continue;
+    attrs.src = url.href;
+    out.push(attrs);
+  }
+  return out;
+}
+
 const ENTITY = /^&(#\d{1,7}|#x[0-9a-f]{1,6}|[a-z][a-z0-9]{1,31});/i;
 function escapeText(text) {
   let out = "";
@@ -401,6 +439,16 @@ export function normalizeContent(input, defaults) {
         link: safeUrl(obj(obj(c.settings).announcement).link),
       },
       showChat: bool(obj(c.settings).showChat, true),
+      analytics: (() => {
+        const raw = obj(c.settings).analytics;
+        const a = raw === undefined ? obj(obj(d.settings).analytics) : obj(raw);
+        const snippet = str(a.snippet, 2000);
+        return {
+          enabled: bool(a.enabled),
+          snippet,
+          scripts: parseTrackingScripts(snippet),
+        };
+      })(),
     },
     sections: {
       services: textBlock(sectionsIn.services, d.sections.services),
